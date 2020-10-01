@@ -1,0 +1,22 @@
+{% extends "base.html.twig" %}
+{% block body %}
+    <div class="row">
+        <div class="col-5">
+            RV
+        </div>
+        <div class="col-4">
+            Price
+        </div>
+    </div>
+    {% for rv in rvs %}
+        <div class="row">
+            <div class="col-5">
+                {{ rv.ymm }}
+            </div>
+            <div class="col-4">
+                ${{ rv.ad_price|number_format }}
+            </div>
+        </div>
+    {% endfor %}
+    <a href="{{ path('home') }}" class="btn btn-primary">Return</a>
+{% endblock %}
