@@ -18,44 +18,45 @@ class RV
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $ymm;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $url;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $ad_make;
+    private $make;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $ad_model;
+    private $model;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $ad_price;
+    private $price;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $ad_location;
+    private $location;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $ad_year;
+    private $year;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\ManyToOne(targetEntity=File::class, inversedBy="rVs")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $filename;
+    private $file;
 
     public function getId(): ?int
     {
@@ -86,74 +87,74 @@ class RV
         return $this;
     }
 
-    public function getAdMake(): ?string
+    public function getMake(): ?string
     {
-        return $this->ad_make;
+        return $this->make;
     }
 
-    public function setAdMake(string $ad_make): self
+    public function setMake(string $make): self
     {
-        $this->ad_make = $ad_make;
+        $this->make = $make;
 
         return $this;
     }
 
-    public function getAdModel(): ?string
+    public function getModel(): ?string
     {
-        return $this->ad_model;
+        return $this->model;
     }
 
-    public function setAdModel(string $ad_model): self
+    public function setModel(string $model): self
     {
-        $this->ad_model = $ad_model;
+        $this->model = $model;
 
         return $this;
     }
 
-    public function getAdPrice(): ?string
+    public function getPrice(): ?string
     {
-        return $this->ad_price;
+        return $this->price;
     }
 
-    public function setAdPrice(string $ad_price): self
+    public function setPrice(string $price): self
     {
-        $this->ad_price = $ad_price;
+        $this->price = $price;
 
         return $this;
     }
 
-    public function getAdLocation(): ?string
+    public function getLocation(): ?string
     {
-        return $this->ad_location;
+        return $this->location;
     }
 
-    public function setAdLocation(string $ad_location): self
+    public function setLocation(string $location): self
     {
-        $this->ad_location = $ad_location;
+        $this->location = $location;
 
         return $this;
     }
 
-    public function getAdYear(): ?string
+    public function getYear(): ?string
     {
-        return $this->ad_year;
+        return $this->year;
     }
 
-    public function setAdYear(string $ad_year): self
+    public function setYear(string $year): self
     {
-        $this->ad_year = $ad_year;
+        $this->year = $year;
 
         return $this;
     }
 
-    public function getFilename(): ?string
+    public function getFile(): ?File
     {
-        return $this->filename;
+        return $this->file;
     }
 
-    public function setFilename(string $filename): self
+    public function setFile(?File $file): self
     {
-        $this->filename = $filename;
+        $this->file = $file;
 
         return $this;
     }

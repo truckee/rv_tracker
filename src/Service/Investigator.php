@@ -22,8 +22,33 @@ class Investigator
         $this->em = $em;
     }
 
-    public function scrape($dir, $filename) {
+    public function rvt($dir, $filename) {
+        $fullName = $dir . $filename;
+        $html = file_get_contents($fullName);
 
+        $crawler = new Crawler($html);
+        $filter = 'ul#search-results.search-results';
+        $divs = $crawler->filter($filter);
+        $found = $divs->html();
+        // need to step over malformed html
+        file_put_contents('../var/pages/found.html', $found);
+        $crawler2 = new Crawler($found);
+        $filter2 = 'li[itemtype="http://schema.org/Product"]';
+        $lis = $crawler2->filter($filter2);
+        $n = count($lis);
+        for ($i = 0; $i < $n; $i++) {
+            $html = $lis->eq($i)->html();
+            dd($html);
+            foreach ($li2 as $value) {
+                
+            }
+        }
+//        dd($divs->html());
+        dd(count($li2));
+//        dd($divs->eq(0)->text());
+    }
+
+    public function rvtrader($dir, $filename) {
         $fullName = $dir . $filename;
         $html = file_get_contents($fullName);
 
@@ -59,13 +84,17 @@ class Investigator
         return $entry;
     }
 
+    public function scrape($dir, $filename) {
+        
+    }
+
     private function addToDB($newRv, $filename) {
         $rv = new RV();
-        $rv->setAdLocation($newRv['ad_location']);
-        $rv->setAdMake($newRv['ad_make']);
-        $rv->setAdPrice($newRv['ad_price']);
-        $rv->setAdYear($newRv['ad_year']);
-        $rv->setAdModel($newRv['ad_model']);
+        $rv->setLocation($newRv['location']);
+        $rv->setMake($newRv['make']);
+        $rv->setPrice($newRv['price']);
+        $rv->setYear($newRv['year']);
+        $rv->setModel($newRv['model']);
         $rv->setUrl($newRv['url']);
         $rv->setYmm($newRv['ymm']);
         $rv->setFilename($filename);

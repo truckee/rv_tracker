@@ -4,6 +4,7 @@
 
 namespace App\Controller;
 
+use App\Entity\File;
 use App\Entity\RV;
 use App\Service\Investigator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,37 +18,42 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class DefaultController extends AbstractController
 {
+
     /**
      * @Route("/", name="home")
      */
     public function index() {
-        $finder = new Finder();
-        $files = $finder->in('../var/pages');
         $em = $this->getDoctrine()->getManager();
-        $used = $em->getRepository(RV::class)->filesUsed();
+        $notUsed = $em->getRepository(File::class)->filesNotUsed();
+        $used = $em->getRepository(File::class)->fileNamesUsed();
         return $this->render('index.html.twig', [
-            'files' => $files,
-            'used' => $used,
+                    'notUsed' => $notUsed,
+                    'used' => $used,
         ]);
     }
 
     /**
-     * @Route("/rvt/{filename}", name="rvt")
+     * @Route("/import/{filename}", name="import_file")
      */
-    public function rvt(KernelInterface $kernel, Investigator $investigate, $filename): Response {
+    public function importFile(KernelInterface $kernel, Investigator $investigate, $filename): Response {
         $em = $this->getDoctrine()->getManager();
-        $used = $em->getRepository(RV::class)->filesUsed();
+        $used = $em->getRepository(File::class)->fileNamesUsed();
 
         if (in_array($filename, $used)) {
             $this->addFlash('warning', 'File already installed');
 
             return $this->redirectToRoute('home');
         }
-        
-        $projectDir = $kernel->getProjectDir();
-        $dir =  $projectDir . '\\var\pages\\';
 
-        $rvs = $investigate->scrape($dir, $filename);
+        $projectDir = $kernel->getProjectDir();
+        $dir = $projectDir . '\\var\pages\\';
+
+        $start = strpos($filename, '_') + 1;
+        $end = strpos($filename, '.');
+        $len = $end - $start;
+        $source = substr($filename, $start, $len);
+//  dd($source);      
+        $rvs = $investigate->$source($dir, $filename);
 
         return $this->render('rv.html.twig', [
                     'rvs' => $rvs,

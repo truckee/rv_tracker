@@ -19,24 +19,6 @@ class RVRepository extends ServiceEntityRepository
         parent::__construct($registry, RV::class);
     }
 
-    public function filesUsed() {
-        $fileNames = $this->createQueryBuilder('r')
-                        ->select('r.filename')
-                        ->distinct()
-                        ->getQuery()
-                        ->getArrayResult()
-        ;
-        if (empty($fileNames)) {
-            $files = [];
-        }
-        
-        foreach ($fileNames as $arr) {
-            $files[] = $arr['filename'];
-        }
-        
-        return $files;
-    }
-
     // /**
     //  * @return RV[] Returns an array of RV objects
     //  */

@@ -1,18 +1,23 @@
 {% extends "base.html.twig" %}
 {% block body %}
     Having fun are we? Here's what we have so far:<br>
-    {% for file in files %}
-        {% set name = file.filename %}
+    {% for filename in used %}
         <div class="row">
-            <div class="col-2">
-                {{ file.filename }}
+            <div class="col-3">
+                {{ filename }}
             </div>
             <div class="col-2">
-                {% if name in used %}
                     (installed)
-                {%else%}
-                    <a class="btn btn-success btn-sm" href="{{ path('rvt', {'filename':name}) }}" role="button">Install</a>
-                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    {% for filename in notUsed %}
+        <div class="row">
+            <div class="col-3">
+                {{ filename }}
+            </div>
+            <div class="col-2">
+                    <a class="btn btn-success btn-sm" href="{{ path('import_file', {'filename':filename}) }}" role="button">Install</a>
             </div>
         </div>
     {% endfor %}
