@@ -22,61 +22,68 @@ class Investigator
         $this->em = $em;
     }
 
-    public function rvt($dir, $filename) {
-        $fullName = $dir . $filename;
+    public function rvt($dir, $file) {
+        $fullName = $dir . $file->getFilename();
         $html = file_get_contents($fullName);
 
         $crawler = new Crawler($html);
-        $filter = 'ul#search-results.search-results';
-        $divs = $crawler->filter($filter);
-        $found = $divs->html();
-        // need to step over malformed html
-        file_put_contents('../var/pages/found.html', $found);
-        $crawler2 = new Crawler($found);
+        $filter = 'ol.ais-Hits-list';
+        $lis = $crawler->filter($filter);
         $filter2 = 'li[itemtype="http://schema.org/Product"]';
-        $lis = $crawler2->filter($filter2);
-        $n = count($lis);
+        // find n nodes containing rvt searches
+        $nodes = $lis->eq(2)->filter($filter2);
+        $n = count($nodes);
+
         for ($i = 0; $i < $n; $i++) {
-            $html = $lis->eq($i)->html();
-            dd($html);
-            foreach ($li2 as $value) {
-                
+            $x = $nodes->eq($i)->children('div')->filter('div.result-content');
+            $price = $x->filter('span.price > span')->text();
+            if ('SOLD' !== $price) {
+                $a = $nodes->eq($i)->children('div')->filter('a.result-link');
+                $rv['url'] = $a->attr('href');
+                $rv['ymm'] = $x->filter('h5')->text();
+                $rv['price'] = preg_replace("/[^0-9]/", '', $price);
+                $rv['location'] = $x->filter('span.location')->text();
+                $this->addToDB($rv, $file);
+                $entry[$i] = $rv;
             }
         }
-//        dd($divs->html());
-        dd(count($li2));
-//        dd($divs->eq(0)->text());
+        $this->em->flush();
+
+        return $entry;
     }
 
-    public function rvtrader($dir, $filename) {
-        $fullName = $dir . $filename;
+    public function rvtrader($dir, $file) {
+        $fullName = $dir . $file->getFilename();
         $html = file_get_contents($fullName);
+        
+        $fieldMap = [
+            'data-ymm' => 'ymm',
+            'data-url' => 'url',
+            'data-ad_make' => 'make',
+            'data-ad_model' => 'model',
+            'data-ad_price' => 'price',
+            'data-ad_location' => 'location',
+            'data-ad_year' => 'year',
 
-        $dataAttr = [
-            'ymm',
-            'url',
-            'ad_make',
-            'ad_model',
-            'ad_price',
-            'ad_location',
-            'ad_year',
         ];
+
         $crawler = new Crawler($html);
         $filter = "div.margin-bottom30.bgWhite.boxShadow:nth-child(1)";
         $divs = $crawler->filter($filter);
         $n = count($divs);
         for ($i = 0; $i < $n; $i++) {
             $html = $divs->eq($i)->html();
-            foreach ($dataAttr as $value) {
-                $attr = 'data-' . $value;
+            foreach ($fieldMap as $key => $value) {
+                $attr = $key;
                 $len = strlen($attr . '="');
                 $pos = strpos($html, $attr);
                 $start = $pos + $len;
                 $end = stripos($html, '"', $start);
+                
                 $item = substr($html, $start, $end - $start);
-                $rv[$value] = $item;
+                $rv[$value] = ($value === 'url') ? 'https://www.rvtrader.com' . $item : $item;
             }
-            $this->addToDB($rv, $filename);
+            $this->addToDB($rv, $file);
             $entry[$i] = $rv;
         }
         $this->em->flush();
@@ -84,22 +91,19 @@ class Investigator
         return $entry;
     }
 
-    public function scrape($dir, $filename) {
-        
-    }
-
-    private function addToDB($newRv, $filename) {
+    private function addToDB($newRv, $file) {
         $rv = new RV();
-        $rv->setLocation($newRv['location']);
-        $rv->setMake($newRv['make']);
-        $rv->setPrice($newRv['price']);
-        $rv->setYear($newRv['year']);
-        $rv->setModel($newRv['model']);
-        $rv->setUrl($newRv['url']);
-        $rv->setYmm($newRv['ymm']);
-        $rv->setFilename($filename);
-        $em = $this->em;
-        $em->persist($rv);
+        $rv->setLocation($newRv['location'] ?? null);
+        $rv->setMake($newRv['make'] ?? null);
+        $rv->setPrice($newRv['price'] ?? null);
+        $rv->setYear($newRv['year'] ?? null);
+        $rv->setModel($newRv['model'] ?? null);
+        $rv->setUrl($newRv['url'] ?? null);
+        $rv->setYmm($newRv['ymm'] ?? null);
+        $file->addRV($rv);
+
+        $this->em->persist($rv);
+        $this->em->persist($file);
     }
 
 }

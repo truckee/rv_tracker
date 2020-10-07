@@ -96,6 +96,9 @@
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.4"
     },
+    "masterminds/html5": {
+        "version": "2.7.4"
+    },
     "monolog/monolog": {
         "version": "2.1.1"
     },

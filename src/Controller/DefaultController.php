@@ -22,7 +22,8 @@ class DefaultController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function index() {
+    public function index()
+    {
         $em = $this->getDoctrine()->getManager();
         $notUsed = $em->getRepository(File::class)->filesNotUsed();
         $used = $em->getRepository(File::class)->fileNamesUsed();
@@ -35,14 +36,21 @@ class DefaultController extends AbstractController
     /**
      * @Route("/import/{filename}", name="import_file")
      */
-    public function importFile(KernelInterface $kernel, Investigator $investigate, $filename): Response {
+    public function importFile(KernelInterface $kernel, Investigator $investigate, $filename): Response
+    {
         $em = $this->getDoctrine()->getManager();
-        $used = $em->getRepository(File::class)->fileNamesUsed();
+        $used = $em->getRepository(File::class)->findOneBy(['filename' => $filename]);
 
-        if (in_array($filename, $used)) {
+        if (!is_null($used)) {
             $this->addFlash('warning', 'File already installed');
 
             return $this->redirectToRoute('home');
+        } else {
+            $file = new File();
+            $file->setAdded(new \DateTime(substr($filename, 0, 8)));
+            $file->setFilename($filename);
+            $em->persist($file);
+            $em->flush();
         }
 
         $projectDir = $kernel->getProjectDir();
@@ -52,12 +60,10 @@ class DefaultController extends AbstractController
         $end = strpos($filename, '.');
         $len = $end - $start;
         $source = substr($filename, $start, $len);
-//  dd($source);      
-        $rvs = $investigate->$source($dir, $filename);
+        $rvs = $investigate->$source($dir, $file);
 
         return $this->render('rv.html.twig', [
                     'rvs' => $rvs,
         ]);
     }
-
 }

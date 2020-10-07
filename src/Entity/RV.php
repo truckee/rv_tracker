@@ -68,7 +68,7 @@ class RV
         return $this->ymm;
     }
 
-    public function setYmm(string $ymm): self
+    public function setYmm(?string $ymm): self
     {
         $this->ymm = $ymm;
 
@@ -80,7 +80,7 @@ class RV
         return $this->url;
     }
 
-    public function setUrl(string $url): self
+    public function setUrl(?string $url): self
     {
         $this->url = $url;
 
@@ -92,7 +92,7 @@ class RV
         return $this->make;
     }
 
-    public function setMake(string $make): self
+    public function setMake(?string $make): self
     {
         $this->make = $make;
 
@@ -104,7 +104,7 @@ class RV
         return $this->model;
     }
 
-    public function setModel(string $model): self
+    public function setModel(?string $model): self
     {
         $this->model = $model;
 
@@ -116,7 +116,7 @@ class RV
         return $this->price;
     }
 
-    public function setPrice(string $price): self
+    public function setPrice(?string $price): self
     {
         $this->price = $price;
 
@@ -128,7 +128,7 @@ class RV
         return $this->location;
     }
 
-    public function setLocation(string $location): self
+    public function setLocation(?string $location): self
     {
         $this->location = $location;
 
@@ -140,7 +140,7 @@ class RV
         return $this->year;
     }
 
-    public function setYear(string $year): self
+    public function setYear(?string $year): self
     {
         $this->year = $year;
 
