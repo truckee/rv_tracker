@@ -38,10 +38,10 @@ class FileRepository extends ServiceEntityRepository
         return $files;
     }
 
-    public function filesNotUsed() {
+    public function filesNotUsed($path) {
         $used = $this->fileNamesUsed();
         $finder = new Finder();
-        $files = $finder->in('../var/pages');
+        $files = $finder->in($path);
         if (count($used) !== count($files)) {
             foreach ($files as $item) {
                 $testName = $item->getFilename();

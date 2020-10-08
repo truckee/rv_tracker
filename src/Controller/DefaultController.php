@@ -5,12 +5,10 @@
 namespace App\Controller;
 
 use App\Entity\File;
-use App\Entity\RV;
 use App\Service\Investigator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -25,7 +23,8 @@ class DefaultController extends AbstractController
     public function index()
     {
         $em = $this->getDoctrine()->getManager();
-        $notUsed = $em->getRepository(File::class)->filesNotUsed();
+        $path = '../var/pages';
+        $notUsed = $em->getRepository(File::class)->filesNotUsed($path);
         $used = $em->getRepository(File::class)->fileNamesUsed();
         return $this->render('index.html.twig', [
                     'notUsed' => $notUsed,

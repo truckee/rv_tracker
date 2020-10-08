@@ -91,6 +91,10 @@ class Investigator
         return $entry;
     }
 
+    public function import($filename) {
+        return 'Not my job, ' . $filename;
+    }
+    
     private function addToDB($newRv, $file) {
         $rv = new RV();
         $rv->setLocation($newRv['location'] ?? null);
