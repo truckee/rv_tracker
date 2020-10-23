@@ -40,7 +40,9 @@ class Investigator
             if ('SOLD' !== $price) {
                 $a = $nodes->eq($i)->children('div')->filter('a.result-link');
                 $rv['url'] = $a->attr('href');
-                $rv['ymm'] = $x->filter('h5')->text();
+                $ymm = $x->filter('h5')->text();
+                $rv['ymm'] = $ymm;
+                $rv['year'] = substr($ymm, 0, 4);
                 $rv['price'] = preg_replace("/[^0-9]/", '', $price);
                 $rv['location'] = $x->filter('span.location')->text();
                 $this->addToDB($rv, $file);
@@ -90,10 +92,6 @@ class Investigator
 
         return $entry;
     }
-
-    public function import($filename) {
-        return 'Not my job, ' . $filename;
-    }
     
     private function addToDB($newRv, $file) {
         $rv = new RV();
@@ -108,6 +106,14 @@ class Investigator
 
         $this->em->persist($rv);
         $this->em->persist($file);
+    }
+    
+    public function calcDays($added)
+    {
+        $start = new \DateTime('2020-09-29');
+        $diff = $start->diff($added);
+        
+        return $diff->format('%r%a');
     }
 
 }

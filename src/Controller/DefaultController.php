@@ -46,7 +46,10 @@ class DefaultController extends AbstractController
             return $this->redirectToRoute('home');
         } else {
             $file = new File();
-            $file->setAdded(new \DateTime(substr($filename, 0, 8)));
+            $added = new \DateTime(substr($filename, 0, 8));
+            $file->setAdded($added);
+//            $days = $investigate->calcDays($added);
+//            $file->setDays($days);
             $file->setFilename($filename);
             $em->persist($file);
             $em->flush();

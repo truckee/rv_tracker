@@ -38,7 +38,7 @@ class RV
     private $model;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="integer")
      */
     private $price;
 
