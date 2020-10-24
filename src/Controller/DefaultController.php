@@ -5,6 +5,7 @@
 namespace App\Controller;
 
 use App\Entity\File;
+use App\Entity\Summary;
 use App\Service\Investigator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -48,10 +49,16 @@ class DefaultController extends AbstractController
             $file = new File();
             $added = new \DateTime(substr($filename, 0, 8));
             $file->setAdded($added);
-//            $days = $investigate->calcDays($added);
-//            $file->setDays($days);
             $file->setFilename($filename);
             $em->persist($file);
+            
+            $entity = $em->getRepository(Summary::class)->findOneBy(['summary_date' => $added]);
+            if (null === $entity) {
+                $summary = new Summary();
+                $summary->setSummaryDate($added);
+                $em->persist($summary);
+            }
+            
             $em->flush();
         }
 

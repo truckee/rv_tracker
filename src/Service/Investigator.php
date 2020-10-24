@@ -5,6 +5,7 @@
 namespace App\Service;
 
 use App\Entity\RV;
+use App\Entity\Summary;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -17,12 +18,20 @@ class Investigator
 {
 
     private $em;
+    private $years = [
+        '2017',
+        '2016',
+        '2015',
+        '2014',
+    ];
 
-    public function __construct(EntityManagerInterface $em) {
+    public function __construct(EntityManagerInterface $em)
+    {
         $this->em = $em;
     }
 
-    public function rvt($dir, $file) {
+    public function rvt($dir, $file)
+    {
         $fullName = $dir . $file->getFilename();
         $html = file_get_contents($fullName);
 
@@ -54,10 +63,11 @@ class Investigator
         return $entry;
     }
 
-    public function rvtrader($dir, $file) {
+    public function rvtrader($dir, $file)
+    {
         $fullName = $dir . $file->getFilename();
         $html = file_get_contents($fullName);
-        
+
         $fieldMap = [
             'data-ymm' => 'ymm',
             'data-url' => 'url',
@@ -66,7 +76,6 @@ class Investigator
             'data-ad_price' => 'price',
             'data-ad_location' => 'location',
             'data-ad_year' => 'year',
-
         ];
 
         $crawler = new Crawler($html);
@@ -81,7 +90,7 @@ class Investigator
                 $pos = strpos($html, $attr);
                 $start = $pos + $len;
                 $end = stripos($html, '"', $start);
-                
+
                 $item = substr($html, $start, $end - $start);
                 $rv[$value] = ($value === 'url') ? 'https://www.rvtrader.com' . $item : $item;
             }
@@ -92,8 +101,9 @@ class Investigator
 
         return $entry;
     }
-    
-    private function addToDB($newRv, $file) {
+
+    private function addToDB($newRv, $file)
+    {
         $rv = new RV();
         $rv->setLocation($newRv['location'] ?? null);
         $rv->setMake($newRv['make'] ?? null);
@@ -104,16 +114,24 @@ class Investigator
         $rv->setYmm($newRv['ymm'] ?? null);
         $file->addRV($rv);
 
+
+        $summary = $this->em->getRepository(Summary::class)->findOneBy(['summary_date' => $file->getAdded()]);
+        if (in_array($newRv['year'], $this->years)) {
+            $getterAvgPrice = 'getYr' . $newRv['year'];
+            $setterAvgPrice = 'setYr' . $newRv['year'];
+            $getterN = 'getN' . $newRv['year'];
+            $setterN = 'setN' . $newRv['year'];
+
+            $currentTotal = $summary->$getterAvgPrice() * $summary->$getterN();
+            $newN = $summary->$getterN() + 1;
+            $summary->$setterN($newN);
+            $newTotal = $currentTotal + $newRv['price'];
+            $newAvgPrice = round($newTotal / $newN, 0);
+            $summary->$setterAvgPrice($newAvgPrice);
+        }
+        $this->em->persist($summary);
         $this->em->persist($rv);
         $this->em->persist($file);
-    }
-    
-    public function calcDays($added)
-    {
-        $start = new \DateTime('2020-09-29');
-        $diff = $start->diff($added);
-        
-        return $diff->format('%r%a');
     }
 
 }
