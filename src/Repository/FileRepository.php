@@ -23,8 +23,7 @@ class FileRepository extends ServiceEntityRepository
     public function fileNamesUsed() {
         $fileNames = $this->createQueryBuilder('f')
                 ->select('f')
-                ->from('App\Entity\RV', 'r')
-                ->distinct()
+                ->orderBy('f.filename', 'DESC')
                 ->getQuery()
                 ->getArrayResult()
         ;
@@ -34,6 +33,18 @@ class FileRepository extends ServiceEntityRepository
         foreach ($fileNames as $arr) {
             $files[] = $arr['filename'];
         }
+
+        return $files;
+    }
+
+    public function mostRecent() {
+        $files = $this->createQueryBuilder('f')
+                ->select('f.filename')
+                ->orderBy('f.added', 'DESC')
+                ->setMaxResults(10)
+                ->getQuery()
+                ->getResult()
+        ;
 
         return $files;
     }

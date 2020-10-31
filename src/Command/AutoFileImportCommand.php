@@ -38,14 +38,14 @@ class AutoFileImportCommand extends Command
             $file->setAdded(new \DateTime(substr($import, 0, 8)));
             $file->setFilename($import);
             $this->em->persist($file);
-            $this->em->flush();
             $dir = $this->projectDir . '\\var\pages\\';
 
             $start = strpos($import, '_') + 1;
             $end = strpos($import, '.');
             $len = $end - $start;
             $source = substr($import, $start, $len);
-            $this->investigator->$source($dir, $file);
+            $newRvs = $this->investigator->$source($dir, $file);
+            $output->writeln(\count($newRvs) . ' imported from ' . $file->getFilename());
         }
 
         $final = $this->em->getRepository(File::class)->filesNotUsed($path);

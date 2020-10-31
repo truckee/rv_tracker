@@ -1,25 +1,37 @@
 {% extends "base.html.twig" %}
 {% block body %}
-    Having fun are we? Here's what we have so far:<br>
-    {% for filename in used %}
-        <div class="row">
-            <div class="col-3">
-                {{ filename }}
-            </div>
-            <div class="col-2">
-                    (installed)
-            </div>
+    <div class="row">
+        <div class="col-4">
+            Having fun are we? Here's what we have so far:<br>
+            <h5>To be installed</h5>
+            {% if notUsed is empty %}
+                None
+            {% else %}
+                {% for filename in notUsed %}
+                    <div class="row">
+                        <div class="col-3">
+                            <a class="btn btn-success btn-sm" href="{{ path('import_file', {'filename':filename}) }}" role="button">{{ filename }}</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <h5>Installed (last 10)</h5>
+            {% for file in used %}
+                <div class="row">
+                    <div class="col-3">
+                        {{ file.filename }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-    {% for filename in notUsed %}
-        <div class="row">
-            <div class="col-3">
-                {{ filename }}
-            </div>
-            <div class="col-2">
-                    <a class="btn btn-success btn-sm" href="{{ path('import_file', {'filename':filename}) }}" role="button">Install</a>
-            </div>
+        <div id="div_chart" class="col-8">
         </div>
-    {% endfor %}
+    </div>
 {% endblock %}
-
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        {{ gc_draw(rvData, 'div_chart') }}
+    </script>
+{% endblock %}
