@@ -23,16 +23,21 @@ class File
      * @ORM\Column(type="string", length=255)
      */
     private $filename;
+//
+//    /**
+//     * @ORM\Column(type="date")
+//     */
+//    private $added;
 
     /**
-     * @ORM\Column(type="date")
-     */
-    private $added;
-
-    /**
-     * @ORM\OneToMany(targetEntity=RV::class, mappedBy="file")
+     * @ORM\OneToMany(targetEntity=RV::class, mappedBy="file", cascade={"persist", "remove"})
      */
     private $rVs;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Summary::class, inversedBy="files", cascade={"persist", "remove"})
+     */
+    private $dates;
 
     public function __construct()
     {
@@ -55,18 +60,18 @@ class File
 
         return $this;
     }
-
-    public function getAdded(): ?\DateTimeInterface
-    {
-        return $this->added;
-    }
-
-    public function setAdded(\DateTimeInterface $added): self
-    {
-        $this->added = $added;
-
-        return $this;
-    }
+//
+//    public function getAdded(): ?\DateTimeInterface
+//    {
+//        return $this->added;
+//    }
+//
+//    public function setAdded(\DateTimeInterface $added): self
+//    {
+//        $this->added = $added;
+//
+//        return $this;
+//    }
 
     /**
      * @return Collection|RV[]
@@ -95,6 +100,18 @@ class File
                 $rV->setFile(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDates(): ?Summary
+    {
+        return $this->dates;
+    }
+
+    public function setDates(?Summary $dates): self
+    {
+        $this->dates = $dates;
 
         return $this;
     }

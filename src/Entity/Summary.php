@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SummaryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -18,22 +20,22 @@ class Summary
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", precision=10, scale=4)
      */
     private $yr_2017 = 0;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", precision=10, scale=4)
      */
     private $yr_2016 = 0;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", precision=10, scale=4)
      */
     private $yr_2015 = 0;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", precision=10, scale=4)
      */
     private $yr_2014 = 0;
 
@@ -60,55 +62,70 @@ class Summary
     /**
      * @ORM\Column(type="date")
      */
-    private $summary_date;
+    private $added;
+
+    /**
+     * @ORM\OneToMany(targetEntity=File::class, mappedBy="dates", cascade={"persist", "remove"})
+     */
+    private $files;
+
+    /**
+     * @ORM\Column(type="string", length=2)
+     */
+    private $class;
+
+    public function __construct()
+    {
+        $this->files = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getYr2017(): ?int
+    public function getYr2017(): ?float
     {
         return $this->yr_2017;
     }
 
-    public function setYr2017(int $yr_2017): self
+    public function setYr2017(float $yr_2017): self
     {
         $this->yr_2017 = $yr_2017;
 
         return $this;
     }
 
-    public function getYr2016(): ?int
+    public function getYr2016(): ?float
     {
         return $this->yr_2016;
     }
 
-    public function setYr2016(int $yr_2016): self
+    public function setYr2016(float $yr_2016): self
     {
         $this->yr_2016 = $yr_2016;
 
         return $this;
     }
 
-    public function getYr2015(): ?int
+    public function getYr2015(): ?float
     {
         return $this->yr_2015;
     }
 
-    public function setYr2015(int $yr_2015): self
+    public function setYr2015(float $yr_2015): self
     {
         $this->yr_2015 = $yr_2015;
 
         return $this;
     }
 
-    public function getYr2014(): ?int
+    public function getYr2014(): ?float
     {
         return $this->yr_2014;
     }
 
-    public function setYr2014(int $yr_2014): self
+    public function setYr2014(float $yr_2014): self
     {
         $this->yr_2014 = $yr_2014;
 
@@ -163,14 +180,57 @@ class Summary
         return $this;
     }
 
-    public function getSummaryDate(): ?\DateTimeInterface
+    public function getAdded(): ?\DateTimeInterface
     {
-        return $this->summary_date;
+        return $this->added;
     }
 
-    public function setSummaryDate(\DateTimeInterface $summary_date): self
+    public function setAdded(\DateTimeInterface $added): self
     {
-        $this->summary_date = $summary_date;
+        $this->added = $added;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|File[]
+     */
+    public function getFiles(): Collection
+    {
+        return $this->files;
+    }
+
+    public function addFile(File $file): self
+    {
+        if (!$this->files->contains($file)) {
+            $this->files[] = $file;
+            $file->setDates($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFile(File $file): self
+    {
+        if ($this->files->contains($file)) {
+            $this->files->removeElement($file);
+            // set the owning side to null (unless already changed)
+            if ($file->getDates() === $this) {
+                $file->setDates(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getClass(): ?string
+    {
+        return $this->class;
+    }
+
+    public function setClass(string $class): self
+    {
+        $this->class = $class;
 
         return $this;
     }

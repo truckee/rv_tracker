@@ -58,6 +58,11 @@ class RV
      */
     private $file;
 
+    /**
+     * @ORM\Column(type="string", length=2)
+     */
+    private $class;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -111,12 +116,12 @@ class RV
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): ?int
     {
         return $this->price;
     }
 
-    public function setPrice(?string $price): self
+    public function setPrice(?int $price): self
     {
         $this->price = $price;
 
@@ -155,6 +160,18 @@ class RV
     public function setFile(?File $file): self
     {
         $this->file = $file;
+
+        return $this;
+    }
+
+    public function getClass(): ?string
+    {
+        return $this->class;
+    }
+
+    public function setClass(string $class): self
+    {
+        $this->class = $class;
 
         return $this;
     }

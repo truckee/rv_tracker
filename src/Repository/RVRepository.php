@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\File;
 use App\Entity\RV;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,37 +15,73 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class RVRepository extends ServiceEntityRepository
 {
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, RV::class);
     }
 
-    // /**
-    //  * @return RV[] Returns an array of RV objects
-    //  */
     /*
-      public function findByExampleField($value)
-      {
-      return $this->createQueryBuilder('r')
-      ->andWhere('r.exampleField = :val')
-      ->setParameter('val', $value)
-      ->orderBy('r.id', 'ASC')
-      ->setMaxResults(10)
-      ->getQuery()
-      ->getResult()
-      ;
-      }
+     * Create rows of data for charting
      */
 
-    /*
-      public function findOneBySomeField($value): ?RV
-      {
-      return $this->createQueryBuilder('r')
-      ->andWhere('r.exampleField = :val')
-      ->setParameter('val', $value)
-      ->getQuery()
-      ->getOneOrNullResult()
-      ;
-      }
-     */
+//    public function averagePrice($class, $counts = false)
+//    {
+//        $modelYears = [
+//            '2017',
+//            '2016',
+//            '2015',
+//            '2014',
+//        ];
+//
+//        $dates = $this->createQueryBuilder('r')
+//                ->select('f.added Added')
+//                ->distinct()
+//                ->from(File::class, 'f')
+//                ->getQuery()
+//                ->getResult();
+//
+//        if (true === $counts) {
+//            $qb = $this->createQueryBuilder('r')
+//                    ->select('r.year Year,  AVG(r.price) Price, COUNT(r.year) N')
+//                    ->join('r.file', 'f')
+//                    ->where('r.year IN(:modelYears)')
+//                    ->andWhere('r.class = :class')
+//                    ->andWhere('f.added = :added')
+//            ;
+//        } else {
+//            $qb = $this->createQueryBuilder('r')
+//                    ->select('r.year Year,  AVG(r.price) Price')
+//                    ->join('r.file', 'f')
+//                    ->where('r.year IN(:modelYears)')
+//                    ->andWhere('r.class = :class')
+//                    ->andWhere('f.added = :added')
+//            ;
+//        }
+//
+//        foreach ($dates as $added) {
+//            $row[] = $added['Added'];
+//            $query = $qb
+//                    ->orderBy('r.year', 'DESC')
+//                    ->groupBy('Year')
+//                    ->setParameters(['modelYears' => $modelYears, 'class' => $class, 'added' => $added['Added']])
+//                    ->getQuery()
+//                    ->getArrayResult();
+//
+//            foreach ($query as $year) {
+//                $row[] = round($year['Price'], 0);
+//            }
+//            if ($counts) {
+//                foreach ($query as $year) {
+//                    $row[] = intval($year['N']);
+//                }
+//            }
+//
+//            $averages[] = $row;
+//            unset($row);
+//        }
+//
+//        return $averages;
+//    }
+
 }

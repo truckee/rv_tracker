@@ -40,7 +40,9 @@ class FileRepository extends ServiceEntityRepository
     public function mostRecent() {
         $files = $this->createQueryBuilder('f')
                 ->select('f.filename')
-                ->orderBy('f.added', 'DESC')
+                ->join('f.dates', 's')
+                ->orderBy('s.added', 'DESC')
+                ->addOrderBy('f.filename')
                 ->setMaxResults(10)
                 ->getQuery()
                 ->getResult()
@@ -66,6 +68,19 @@ class FileRepository extends ServiceEntityRepository
             return [];
         }
     }
+    
+//    public function newSummaryDate($max)
+//    {
+//       $qb = $this->createQueryBuilder('f')
+//               ->select('f.added')
+//               ->orderBy('f.added', '')
+//               ->where('f.added > :max')
+//               ->setParameter('max' , $max)
+//               ->getQuery()
+//               ->getResult();
+//       
+//       return $qb[0];
+//    }
 
 //    private function fileList() : array {
 //
