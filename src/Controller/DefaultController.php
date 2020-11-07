@@ -36,16 +36,20 @@ class DefaultController extends AbstractController
     public function index(ChartService $chart)
     {
         $em = $this->getDoctrine()->getManager();
-        $avg = $em->getRepository(Summary::class)->averagePrice('C');
+        $avgC = $em->getRepository(Summary::class)->averagePrice('C');
+        $avgBPlus = $em->getRepository(Summary::class)->averagePrice('B+');
         $path = '../var/pages';
         $notUsed = $em->getRepository(File::class)->filesNotUsed($this->path);
         $used = $em->getRepository(File::class)->mostRecent();
-        $rvData = $chart->rvChart($avg, 'C');
-
+        $rvDataC = $chart->rvChart($avgC, 'C');
+        $rvDataB = $chart->rvChart($avgBPlus, 'B+');
+        $rvHisto = $chart->histogram();
         return $this->render('index.html.twig', [
                     'notUsed' => $notUsed,
                     'used' => $used,
-                    'rvData' => $rvData,
+                    'rvDataC' => $rvDataC,
+                    'rvDataB' => $rvDataB,
+                    'rvHisto' => $rvHisto,
         ]);
     }
 
@@ -63,32 +67,13 @@ class DefaultController extends AbstractController
             return $this->redirectToRoute('home');
         } else {
             $rvs = $this->loadFile($filename);
-//            $today = new \DateTime('midnight');
-//            $summary = $em->getRepository(Summary::class)->findOneBy(['added' => $today]);
-//            if (null === $summary) {
-//                $summary = new Summary();
-//                $summary->setAdded($today);
-//            }
-//
-//            $file = new File();
-//            $file->setFilename($filename);
-//            $summary->addFile($file);
-//            $em->persist($file);
-//        }
-//
-//        $dir = $this->projectDir . '\\var\pages\\';
-//        $start = strpos($filename, '_') + 1;
-//        $end = strpos($filename, '.');
-//        $len = $end - $start;
-//        $source = substr($filename, $start, $len);
-//        $rvs = $this->investigator->$source($dir, $file, $summary);
         }
 
         return $this->render('rv.html.twig', [
                     'rvs' => $rvs,
         ]);
     }
-    
+
     /**
      * @Route("/loadAll", name="load_all")
      */
@@ -102,24 +87,17 @@ class DefaultController extends AbstractController
             $n += \count($rvs);
         }
         $this->addFlash('success', $n . ' RVs loaded');
-        
+
         return $this->redirectToRoute('home');
-        
     }
 
     private function loadFile($filename)
     {
         $today = new \DateTime('midnight');
         $em = $this->getDoctrine()->getManager();
-//        $summary = $em->getRepository(Summary::class)->findOneBy(['added' => $today]);
-//        if (null === $summary) {
-//            $summary = new Summary();
-//            $summary->setAdded($today);
-//        }
 
         $file = new File();
         $file->setFilename($filename);
-//        $summary->addFile($file);
         $em->persist($file);
 
         $dir = $this->projectDir . '\\var\pages\\';
@@ -128,16 +106,21 @@ class DefaultController extends AbstractController
         $len = $end - $start;
         $source = substr($filename, $start, $len);
         $rvs = $this->investigator->$source($dir, $file);
-        
+
         return $rvs;
     }
 
     /**
      * @Route("exp", name="exp")
      */
-    public function experiment()
+    public function experiment(ChartService $chart)
     {
-        $this->investigator->testFile();
+//        $this->investigator->testFile();
+        $histo = $chart->histogram();
+
+        return $this->render('chart.html.twig', [
+                    'histo' => $histo
+        ]);
     }
 
 }

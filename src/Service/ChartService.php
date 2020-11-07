@@ -4,6 +4,9 @@
 
 namespace App\Service;
 
+use App\Entity\RV;
+use CMEN\GoogleChartsBundle\GoogleCharts\Options\VAxis;
+use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Histogram;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -19,19 +22,8 @@ class ChartService
 
     public function rvChart($avg, $class)
     {
-//        $summary = $this->em->getRepository(Summary::class)->findAll();
         $chart = new LineChart();
-        $first[] =  ['Date', '2017', '2016', '2015', '2014'];
-//        foreach ($summary as $row) {
-//            $table[] = [
-//                $row->getSummaryDate(),
-//                $row->getYr2017(),
-//                $row->getYr2016(),
-//                $row->getYr2015(),
-//                $row->getYr2014()
-//            ];
-//        }
-
+        $first[] = ['Date', '2017', '2016', '2015', '2014'];
         $resultant = array_merge($first, $avg);
         $chart->getData()->setArrayToDataTable($resultant);
         $chart->getOptions()
@@ -39,9 +31,33 @@ class ChartService
                 ->setHeight(400)
                 ->setWidth(700)
                 ->getLegend(['position' => 'below'])
-                ;
+        ;
 
         return $chart;
+    }
+
+    public function histogram()
+    {
+        $rvs = $this->em->getRepository(RV::class)->findBy(['class' => 'C']);
+        foreach ($rvs as $item) {
+            $data[] = ['RV' => $item->getYmm(), 'Price' => $item->getPrice() / 1000];
+        }
+        $histo = new Histogram();
+        $histo->getData()->setArrayToDataTable($data, true);
+
+        $histo->getOptions()->setTitle('Distribution of RV Prices');
+        $histo->getOptions()->setWidth(700);
+        $histo->getOptions()->setHeight(400);
+        $histo->getOptions()->getLegend()->setPosition('none');
+        $histo->getOptions()->setColors(['green']);
+
+        $histo->getOptions()->getHAxis()->setTitle('$,000');
+
+        $vAxis1 = new VAxis();
+        $vAxis1->setTitle('# RVs');
+        $histo->getOptions()->setVAxes([$vAxis1]);
+
+        return $histo;
     }
 
 }

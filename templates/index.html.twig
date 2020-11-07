@@ -25,7 +25,11 @@
                 </div>
             {% endfor %}
         </div>
-        <div id="div_chart" class="col-8">
+        <div class="col-8">
+            <button class="btn btn-sm btn-success mb-3" id="charts" type="button">Change chart</button>  
+            <div id="div_chart_c"></div>
+            <div id="div_chart_b"></div>
+            <div id="div_chart_histo"></div>
         </div>
     </div>
 {% endblock %}
@@ -33,6 +37,6 @@
     {{ parent() }}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        {{ gc_draw(rvData, 'div_chart') }}
+        {{ gc_draw([rvDataC, rvDataB, rvHisto], ['div_chart_c', 'div_chart_b', 'div_chart_histo']) }}
     </script>
 {% endblock %}
