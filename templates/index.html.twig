@@ -1,7 +1,7 @@
 {% extends "base.html.twig" %}
 {% block body %}
     <div class="row">
-        <div class="col-4">
+        <div class="col-3 font-smaller">
             Having fun are we? Here's what we have so far:<br>
             <h5>To be installed</h5>
             {% if notUsed is empty %}
@@ -25,11 +25,14 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="col-8">
-            <button class="btn btn-sm btn-success mb-3" id="charts" type="button">Change chart</button>  
-            <div id="div_chart_c"></div>
-            <div id="div_chart_b"></div>
-            <div id="div_chart_histo"></div>
+        <div class="col-9">
+            <button class="btn btn-sm btn-primary mb-3" id="charts" type="button">Change chart</button>  
+            <div id="priceC"></div>
+            <div id="countC"></div>
+            <div id="priceB"></div>
+            <div id="countB"></div>
+            <div id="histoC"></div>
+            <div id="histoB"></div>
         </div>
     </div>
 {% endblock %}
@@ -37,6 +40,7 @@
     {{ parent() }}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        {{ gc_draw([rvDataC, rvDataB, rvHisto], ['div_chart_c', 'div_chart_b', 'div_chart_histo']) }}
+        {{ gc_draw([priceC, countC, priceB, countB, histoC, histoB], ['priceC', 'countC', 'priceB', 'countB', 'histoC', 'histoB']) }}
     </script>
+    {{ encore_entry_script_tags('charts') }}
 {% endblock %}

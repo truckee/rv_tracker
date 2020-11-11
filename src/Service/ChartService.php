@@ -5,9 +5,11 @@
 namespace App\Service;
 
 use App\Entity\RV;
+use App\Entity\Summary;
 use CMEN\GoogleChartsBundle\GoogleCharts\Options\VAxis;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Histogram;
-use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart;
+use CMEN\GoogleChartsBundle\GoogleCharts\Charts\LineChart;
+use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart as MaterialLineChart;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ChartService
@@ -20,32 +22,35 @@ class ChartService
         $this->em = $em;
     }
 
-    public function rvChart($avg, $class)
+    public function rvChart($class, $type)
     {
+        $data = $this->em->getRepository(Summary::class)->chartData($class, $type);
         $chart = new LineChart();
         $first[] = ['Date', '2017', '2016', '2015', '2014'];
-        $resultant = array_merge($first, $avg);
+        $resultant = array_merge($first, $data);
         $chart->getData()->setArrayToDataTable($resultant);
-        $chart->getOptions()
-                ->setTitle('Class ' . $class . ' RV Prices: Model Years 2014-2017')
+        $chart->getOptions()->setTitle('Class ' . $class . ' RV ' . $type . ': Model Years 2014-2017');
+        $chart->getOptions()->setLineWidth(1)
                 ->setHeight(400)
                 ->setWidth(700)
-                ->getLegend(['position' => 'below'])
-        ;
+                ->getHAxis()->setTitle('Date')->setFormat('M/d')
+                ->setShowTextEvery(7);
+        $chart->getOptions()->getVAxis()->setTitle(($type === 'Price') ? '$' : 'N');
+        $chart->getOptions()->getLegend()->setPosition('right');
 
         return $chart;
     }
 
-    public function histogram()
+    public function histogram($class)
     {
-        $rvs = $this->em->getRepository(RV::class)->findBy(['class' => 'C']);
+        $rvs = $this->em->getRepository(RV::class)->lastFourWeeks(['class' => $class]);
         foreach ($rvs as $item) {
             $data[] = ['RV' => $item->getYmm(), 'Price' => $item->getPrice() / 1000];
         }
         $histo = new Histogram();
         $histo->getData()->setArrayToDataTable($data, true);
-
-        $histo->getOptions()->setTitle('Distribution of RV Prices');
+        $title = 'Distribution of Class ' . $class . ' RV Prices (last 4 weeks)';
+        $histo->getOptions()->setTitle($title);
         $histo->getOptions()->setWidth(700);
         $histo->getOptions()->setHeight(400);
         $histo->getOptions()->getLegend()->setPosition('none');

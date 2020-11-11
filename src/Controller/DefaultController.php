@@ -5,7 +5,7 @@
 namespace App\Controller;
 
 use App\Entity\File;
-use App\Entity\RV;
+//use App\Entity\RV;
 use App\Entity\Summary;
 use App\Service\ChartService;
 use App\Service\Investigator;
@@ -36,20 +36,24 @@ class DefaultController extends AbstractController
     public function index(ChartService $chart)
     {
         $em = $this->getDoctrine()->getManager();
-        $avgC = $em->getRepository(Summary::class)->averagePrice('C');
-        $avgBPlus = $em->getRepository(Summary::class)->averagePrice('B+');
-        $path = '../var/pages';
         $notUsed = $em->getRepository(File::class)->filesNotUsed($this->path);
         $used = $em->getRepository(File::class)->mostRecent();
-        $rvDataC = $chart->rvChart($avgC, 'C');
-        $rvDataB = $chart->rvChart($avgBPlus, 'B+');
-        $rvHisto = $chart->histogram();
+        $priceC = $chart->rvChart('C', 'Price');
+        $countC = $chart->rvChart('C', 'Count');
+        $priceB = $chart->rvChart('B+', 'Price');
+        $countB = $chart->rvChart('B+', 'Count');
+        $histoC = $chart->histogram('C');
+        $histoB = $chart->histogram('B+');
+
         return $this->render('index.html.twig', [
                     'notUsed' => $notUsed,
                     'used' => $used,
-                    'rvDataC' => $rvDataC,
-                    'rvDataB' => $rvDataB,
-                    'rvHisto' => $rvHisto,
+                    'priceC' => $priceC,
+                    'priceB' => $priceB,
+                    'countC' => $countC,
+                    'countB' => $countB,
+                    'histoC' => $histoC,
+                    'histoB' => $histoB,
         ]);
     }
 
@@ -93,7 +97,6 @@ class DefaultController extends AbstractController
 
     private function loadFile($filename)
     {
-        $today = new \DateTime('midnight');
         $em = $this->getDoctrine()->getManager();
 
         $file = new File();
@@ -116,10 +119,16 @@ class DefaultController extends AbstractController
     public function experiment(ChartService $chart)
     {
 //        $this->investigator->testFile();
-        $histo = $chart->histogram();
+//        $em = $this->getDoctrine()->getManager();
+//        $countDataBPlus = $em->getRepository(Summary::class)->chartData('count', 'B+');
+//        dump($countDataBPlus);
+        $test = $chart->lineChart();
+//        $test = $chart->rvChart('B+', 'Count');
+//        dump($test);
+//        $chart = $chart->histogram('B+');
 
         return $this->render('chart.html.twig', [
-                    'histo' => $histo
+                    'chart' => $test
         ]);
     }
 

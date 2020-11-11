@@ -68,7 +68,7 @@ Encore
 
     // uncomment if you use API Platform Admin (composer req api-admin)
     //.enableReactPreset()
-    //.addEntry('admin', './assets/admin.js')
+    .addEntry('charts', './assets/js/chartSwitch.js')
 ;
 
 module.exports = Encore.getWebpackConfig();
