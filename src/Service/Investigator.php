@@ -53,7 +53,8 @@ class Investigator
                 $rv['ymm'] = $ymm;
                 $rv['year'] = substr($ymm, 0, 4);
                 $priceString = preg_replace("/[^0-9]/", '', $price);
-                $rv['location'] = $x->filter('span.location')->text();
+                $place = $x->filter('span.location')->text();
+                $rv['location'] = $this->zipTest($place);
                 if (0 < intval($priceString)) {
                     $rv['price'] = intval($priceString);
                     $this->addToDB($rv, $file);
@@ -131,12 +132,13 @@ class Investigator
             $year = substr($text, 5, 4);
             $ymm = substr($text, 5, 99);
             $priceText = $nodes->eq($i)->filter('h2.inv-price')->text();
-            $location = $nodes->eq($i)->filter('.inv-unit-city-state')->text();
+            $place = $nodes->eq($i)->filter('.inv-unit-city-state')->text();
             $digits = preg_replace("/[^0-9]/", '', $priceText);
             $price = substr($digits, 0, strlen($digits) - 2);
             $rv['year'] = $year;
             $rv['ymm'] = $ymm;
-            $rv['location'] = $location;
+            // strip zip code from location so that locations may be compared
+            $rv['location'] = $this->zipTest($place);
             if (0 < intval($price)) {
                 $rv['price'] = intval($price);
                 $this->addToDB($rv, $file);
@@ -177,17 +179,19 @@ class Investigator
         $class = $rv->getClass();
         $year = $rv->getYear();
         $price = $rv->getPrice();
-        $today = new \DateTime('midnight');
-        $summary = $this->em->getRepository(Summary::class)->findOneBy(['added' => $today, 'class' => $class]);
+        $fileName = $file->getFilename();
+        $fileDate = new \DateTime(substr($fileName, 0, 8));
+
+        $summary = $this->em->getRepository(Summary::class)->findOneBy(['added' => $fileDate, 'class' => $class]);
         if (null === $summary) {
             $summary = new Summary();
-            $summary->setAdded($today);
+            $summary->setAdded($fileDate);
             $summary->setClass($class);
         }
         $summary->addFile($file);
         $this->em->persist($summary);
         $this->em->flush($summary);
-        
+
         $getterAvgPrice = 'getYr' . $year;
         $setterAvgPrice = 'setYr' . $year;
         $getterN = 'getN' . $year;
@@ -220,6 +224,15 @@ class Investigator
 
         dd($n);
 //        dd($x->text());
+    }
+
+    private function zipTest($location)
+    {
+        if (is_numeric(substr($location, -5))) {
+            return substr($d, 0, strlen($location) - 6);
+        }
+
+        return $location;
     }
 
 }

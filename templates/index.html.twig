@@ -25,14 +25,38 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="col-9">
-            <button class="btn btn-sm btn-primary mb-3" id="charts" type="button">Change chart</button>  
-            <div id="priceC"></div>
-            <div id="countC"></div>
-            <div id="priceB"></div>
-            <div id="countB"></div>
-            <div id="histoC"></div>
-            <div id="histoB"></div>
+        <div class="col-9 text-center">
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-3">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a id="chartPrevious" class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo; Chart</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a id="chartNext" class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">Chart &raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>            
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div id="chart1"></div>
+                    <div id="chart2"></div>
+                    <div id="chart3"></div>
+                    <div id="chart4"></div>
+                    <div id="chart5"></div>
+                    <div id="chart6"></div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -40,7 +64,7 @@
     {{ parent() }}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        {{ gc_draw([priceC, countC, priceB, countB, histoC, histoB], ['priceC', 'countC', 'priceB', 'countB', 'histoC', 'histoB']) }}
+        {{ gc_draw([priceC, countC, priceB, countB, histoC, histoB], ['chart1', 'chart2', 'chart3', 'chart4', 'chart5', 'chart6']) }}
     </script>
     {{ encore_entry_script_tags('charts') }}
 {% endblock %}

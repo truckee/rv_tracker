@@ -41,7 +41,6 @@ class SummaryRepository extends ServiceEntityRepository
                         ->orderBy('s.added')
                         ->setParameter('class', $class)
                         ->getQuery()->getResult();
-
         foreach ($query as $row) {
             foreach ($row as $key => $value) {
                 if (!is_object($value)) {
@@ -51,7 +50,7 @@ class SummaryRepository extends ServiceEntityRepository
                 }
             }
             $resultant[] = $newRow;
-        }
+        };
 
         return $resultant;
     }
@@ -73,6 +72,7 @@ class SummaryRepository extends ServiceEntityRepository
                 )->getArrayResult();
 
         // $history ~ [date, year, average, N]
+        $i = 0;
         foreach ($history as $item) {
             $qb = $this->createQueryBuilder('s')
                             ->update()
@@ -83,7 +83,10 @@ class SummaryRepository extends ServiceEntityRepository
                             ->setParameter(2, $item['N'])
                             ->setParameter(3, $item['added'])
                             ->getQuery()->execute();
+            $i++;
         }
+
+        return $i;
     }
 
     // /**

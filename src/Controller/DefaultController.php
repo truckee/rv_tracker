@@ -122,14 +122,26 @@ class DefaultController extends AbstractController
 //        $em = $this->getDoctrine()->getManager();
 //        $countDataBPlus = $em->getRepository(Summary::class)->chartData('count', 'B+');
 //        dump($countDataBPlus);
-        $test = $chart->lineChart();
-//        $test = $chart->rvChart('B+', 'Count');
+//        $test = $chart->lineChart();
+        $test = $chart->rvChart('C', 'Count');
 //        dump($test);
 //        $chart = $chart->histogram('B+');
 
         return $this->render('chart.html.twig', [
                     'chart' => $test
         ]);
+    }
+
+    /**
+     * @Route("/populate", name="populate")
+     */
+    public function populate()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $p = $em->getRepository(Summary::class)->populate();
+        $this->addFlash('success', $p . ' records added to Summary table');
+
+        return $this->redirectToRoute('home');
     }
 
 }
