@@ -2,9 +2,11 @@
 {% block body %}
     <div class="row">
         <div class="col-3 font-smaller">
+            <span id="clickMe" data-chart="0">Click me</span>
         </div>
         <div class="col-9">
-            <div id="chart"></div>
+            <div id="chartA"></div>
+            <div id="chartB"></div>
         </div>
     </div>
 {% endblock %}
@@ -12,6 +14,10 @@
     {{ parent() }}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        {{ gc_draw(chart, 'chart') }}
+{#    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback();#}
+        {#google.charts.load('current', {packages:['corechart']});#}
+        {{ gc_draw(chartA, 'chartA') }}
     </script>
+    {{ encore_entry_script_tags('altChart') }}
 {% endblock %}

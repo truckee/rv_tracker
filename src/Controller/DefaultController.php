@@ -5,11 +5,9 @@
 namespace App\Controller;
 
 use App\Entity\File;
-//use App\Entity\RV;
 use App\Entity\Summary;
 use App\Service\ChartService;
 use App\Service\Investigator;
-//use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,23 +35,9 @@ class DefaultController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $notUsed = $em->getRepository(File::class)->filesNotUsed($this->path);
-        $used = $em->getRepository(File::class)->mostRecent();
-        $priceC = $chart->rvChart('C', 'Price');
-        $countC = $chart->rvChart('C', 'Count');
-        $priceB = $chart->rvChart('B+', 'Price');
-        $countB = $chart->rvChart('B+', 'Count');
-        $histoC = $chart->histogram('C');
-        $histoB = $chart->histogram('B+');
 
         return $this->render('index.html.twig', [
-                    'notUsed' => $notUsed,
-                    'used' => $used,
-                    'priceC' => $priceC,
-                    'priceB' => $priceB,
-                    'countC' => $countC,
-                    'countB' => $countB,
-                    'histoC' => $histoC,
-                    'histoB' => $histoB,
+                    'notUsed' => \count($notUsed),
         ]);
     }
 
@@ -118,18 +102,33 @@ class DefaultController extends AbstractController
      */
     public function experiment(ChartService $chart)
     {
-//        $this->investigator->testFile();
-//        $em = $this->getDoctrine()->getManager();
-//        $countDataBPlus = $em->getRepository(Summary::class)->chartData('count', 'B+');
-//        dump($countDataBPlus);
-//        $test = $chart->lineChart();
-        $test = $chart->rvChart('C', 'Count');
-//        dump($test);
-//        $chart = $chart->histogram('B+');
+        $a = $chart->buildChart('line', 'C', 'Price');
+//        $js = $chart->getChartJs($a, 'locX');
+//        dd($js);
 
         return $this->render('chart.html.twig', [
-                    'chart' => $test
+                    'chartA' => $a,
         ]);
+    }
+
+    /**
+     * @Route("/js/{which}", name="js")
+     */
+    public function returnChartJs(ChartService $chart, $which)
+    {
+        $available = [
+            ['type' => 'line', 'class' => 'C', 'subtype' => 'Price'],
+            ['type' => 'line', 'class' => 'C', 'subtype' => 'Count'],
+            ['type' => 'line', 'class' => 'B+', 'subtype' => 'Price'],
+            ['type' => 'line', 'class' => 'B+', 'subtype' => 'Count'],
+            ['type' => 'histogram', 'class' => 'C'],
+            ['type' => 'histogram', 'class' => 'B+'],
+        ];
+
+        $js = $chart->getChartJs($available[$which], 'chartA');
+        $response = new Response($js);
+
+        return $response;
     }
 
     /**

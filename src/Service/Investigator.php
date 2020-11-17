@@ -54,7 +54,7 @@ class Investigator
                 $rv['year'] = substr($ymm, 0, 4);
                 $priceString = preg_replace("/[^0-9]/", '', $price);
                 $place = $x->filter('span.location')->text();
-                $rv['location'] = $this->zipTest($place);
+                $rv['location'] = $this->conformLocation($place);
                 if (0 < intval($priceString)) {
                     $rv['price'] = intval($priceString);
                     $this->addToDB($rv, $file);
@@ -138,7 +138,7 @@ class Investigator
             $rv['year'] = $year;
             $rv['ymm'] = $ymm;
             // strip zip code from location so that locations may be compared
-            $rv['location'] = $this->zipTest($place);
+            $rv['location'] = $this->conformLocation($place);
             if (0 < intval($price)) {
                 $rv['price'] = intval($price);
                 $this->addToDB($rv, $file);
@@ -226,10 +226,16 @@ class Investigator
 //        dd($x->text());
     }
 
-    private function zipTest($location)
+    private function conformLocation($location)
     {
+        // removes zip code
         if (is_numeric(substr($location, -5))) {
             return substr($d, 0, strlen($location) - 6);
+        }
+
+        // removes mileage from 89523
+        if (strpos($location, '(') > 0) {
+            return substr($location, 0, strpos($location, '(') - 1);
         }
 
         return $location;

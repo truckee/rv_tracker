@@ -9,20 +9,35 @@ use App\Entity\Summary;
 use CMEN\GoogleChartsBundle\GoogleCharts\Options\VAxis;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Histogram;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\LineChart;
-use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart as MaterialLineChart;
+use CMEN\GoogleChartsBundle\Twig\GoogleChartsExtension;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ChartService
 {
 
     private $em;
+    private $gce;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, GoogleChartsExtension $gce)
     {
         $this->em = $em;
+        $this->gce = $gce;
     }
 
-    public function rvChart($class, $type)
+    public function buildChart($chartType, $class, $subtype = null)
+    {
+        switch ($chartType) {
+            case 'line':
+                return $this->lineChart($class, $subtype);
+                break;
+            case 'histogram':
+                return $this->histoChart($class);
+            default:
+                break;
+        }
+    }
+
+    private function lineChart($class, $type)
     {
         $data = $this->em->getRepository(Summary::class)->chartData($class, $type);
         $chart = new LineChart();
@@ -41,7 +56,7 @@ class ChartService
         return $chart;
     }
 
-    public function histogram($class)
+    private function histoChart($class)
     {
         $rvs = $this->em->getRepository(RV::class)->lastFourWeeks(['class' => $class]);
         foreach ($rvs as $item) {
@@ -63,6 +78,31 @@ class ChartService
         $histo->getOptions()->setVAxes([$vAxis1]);
 
         return $histo;
+    }
+
+    public function getChartJs($chartSpecs, $location)
+    {
+        $chartType = $chartSpecs['type'] ?? null;
+        $class = $chartSpecs['class'] ?? null;
+        $subtype = $chartSpecs['subtype'] ?? null;
+
+        $chart = $this->buildChart($chartType, $class, $subtype);
+
+        $js = $this->getStart($chart, $location);
+        $end = $this->getEnd($chart, $location);
+        $part3 = substr($end, 0, strlen($end) - 1);
+
+        return $js . $end;
+    }
+
+    private function getStart($chart, $location)
+    {
+        return $this->gce->gcStart($chart, $location);
+    }
+
+    private function getEnd($chart, $location)
+    {
+        return $this->gce->gcEnd($chart, $location);
     }
 
 }

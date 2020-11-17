@@ -16,11 +16,13 @@ use Symfony\Component\Finder\Finder;
 class FileRepository extends ServiceEntityRepository
 {
 
-    public function __construct(ManagerRegistry $registry) {
+    public function __construct(ManagerRegistry $registry)
+    {
         parent::__construct($registry, File::class);
     }
 
-    public function fileNamesUsed() {
+    public function fileNamesUsed()
+    {
         $fileNames = $this->createQueryBuilder('f')
                 ->select('f')
                 ->orderBy('f.filename', 'DESC')
@@ -37,7 +39,8 @@ class FileRepository extends ServiceEntityRepository
         return $files;
     }
 
-    public function mostRecent() {
+    public function mostRecent()
+    {
         $files = $this->createQueryBuilder('f')
                 ->select('f.filename')
                 ->join('f.dates', 's')
@@ -51,41 +54,21 @@ class FileRepository extends ServiceEntityRepository
         return $files;
     }
 
-    public function filesNotUsed($path) {
+    public function filesNotUsed($path)
+    {
         $used = $this->fileNamesUsed();
         $finder = new Finder();
         $files = $finder->in($path);
-        if (count($used) !== count($files)) {
-            foreach ($files as $item) {
-                $testName = $item->getFilename();
-                if (!in_array($testName, $used)) {
-                    $names[] = $testName;
-                }
+        foreach ($files as $item) {
+            $testName = $item->getFilename();
+            if (!in_array($testName, $used)) {
+                $names[] = $testName;
             }
-            
-            return $names;
-        } else {
-            return [];
         }
-    }
-    
-//    public function newSummaryDate($max)
-//    {
-//       $qb = $this->createQueryBuilder('f')
-//               ->select('f.added')
-//               ->orderBy('f.added', '')
-//               ->where('f.added > :max')
-//               ->setParameter('max' , $max)
-//               ->getQuery()
-//               ->getResult();
-//       
-//       return $qb[0];
-//    }
 
-//    private function fileList() : array {
-//
-//        return $files
-//    }
+        return (isset($names)) ? $names : [];
+    }
+
     // /**
     //  * @return File[] Returns an array of File objects
     //  */

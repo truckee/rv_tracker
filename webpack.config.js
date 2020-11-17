@@ -69,6 +69,7 @@ Encore
     // uncomment if you use API Platform Admin (composer req api-admin)
     //.enableReactPreset()
     .addEntry('charts', './assets/js/chartSwitch.js')
+    .addEntry('altChart', './assets/js/altChart.js')
 //    .addEntry('chartsOn', './assets/js/chartSwitchOn.js')
 ;
 
