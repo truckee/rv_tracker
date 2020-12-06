@@ -49,7 +49,7 @@ class ChartService
                 ->setHeight(400)
                 ->setWidth(700)
                 ->getHAxis()->setTitle('Date')->setFormat('M/d')
-                ->setShowTextEvery(7);
+                ->setShowTextEvery(4);
         $chart->getOptions()->getVAxis()->setTitle(($type === 'Price') ? '$' : 'N');
         $chart->getOptions()->getLegend()->setPosition('right');
 

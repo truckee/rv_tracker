@@ -67,6 +67,7 @@ class DefaultController extends AbstractController
      */
     public function loadAll()
     {
+        set_time_limit(0);
         $em = $this->getDoctrine()->getManager();
         $files = $em->getRepository(File::class)->filesNotUsed($this->path);
         $n = 0;
