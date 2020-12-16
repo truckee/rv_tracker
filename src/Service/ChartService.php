@@ -29,7 +29,6 @@ class ChartService
         switch ($chartType) {
             case 'line':
                 return $this->lineChart($class, $subtype);
-                break;
             case 'histogram':
                 return $this->histoChart($class);
             default:

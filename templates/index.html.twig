@@ -3,12 +3,11 @@
     <div class="row">
         <div class="col-2 font-smaller">
             Having fun are we? Here's what we have so far:<br>
+            {% if notUsed > 0 %}
             <h5>To be installed</h5>
-            {% if notUsed == 0 %}
-                None
-            {% else %}
                 <a class="btn btn-info btn-sm" href="{{ path('load_all') }}" role="button">Load {{ notUsed }} files</a>
             {% endif %}
+            <p><a class="btn btn-info btn-sm" href="{{ path('models') }}" role="button">View models</a></p>
         </div>
         <div class="col-9 text-center">
             <div class="row">

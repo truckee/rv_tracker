@@ -1,22 +1,44 @@
 {% extends "base.html.twig" %}
 {% block body %}
     <div class="row">
-        <div class="col-5">
-            RV
+        <div class="col-4">
+            Class C
+        </div>
+        <div class="col-2">
+            Price
         </div>
         <div class="col-4">
+            Class B+
+        </div>
+        <div class="col-2">
             Price
         </div>
     </div>
-    {% for rv in rvs %}
-        <div class="row">
-            <div class="col-5">
-                {{ rv.ymm }}
-            </div>
-            <div class="col-4">
-                ${{ rv.price|number_format }}
-            </div>
+    <div class="row">
+        <div class="col-6">
+            {% for rv in classC %}
+                <div class="row">
+                    <div class="col-8">
+                        {{ rv.name }}
+                    </div>
+                    <div class="col-4">
+                        ${{ rv.Avg|number_format }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+        <div class="col-6">
+            {% for bee in classB %}
+                <div class="row">
+                    <div class="col-8">
+                        {{ bee.ymm }}
+                    </div>
+                    <div class="col-4">
+                        ${{ bee.price|number_format }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
     <a href="{{ path('home') }}" class="btn btn-primary">Return</a>
 {% endblock %}

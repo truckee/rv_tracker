@@ -211,19 +211,19 @@ class Investigator
     public function testFile()
     {
         $dir = 'G:\\workspace\\scraper\\var\\pages\\';
-        $file = '20201103_rvusa.com_10-48-28' . '.html';
+        $file = '20201210_match_10-22-45' . '.html';
         $html = file_get_contents($dir . $file);
         $crawler = new Crawler($html);
-        $filter = '.row.listing-top';
+        $filter = 'input.custom-control-input';
         $nodes = $crawler->filter($filter);
-//        $filter2 = 'li[itemtype="http://schema.org/Product"]';
-        // find n nodes containing rvt searches
-//        $nodes = $lis->eq(2)->filter($filter2);
-        $n = \count($nodes);
-//        $x = $nodes->eq(0)->filter('.inv-unit-city-state');
+        $countNodes = \count($nodes);
 
-        dd($n);
-//        dd($x->text());
+        $filter2 = 'li[itemtype="http://schema.org/Product"]';
+        // find n nodes containing rvt searches
+        $nodes = $lis->eq(2)->filter($filter2);
+        $x = $nodes->eq(0)->filter('input[type=checkbox]');
+
+        dd($x);
     }
 
     private function conformLocation($location)

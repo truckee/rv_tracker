@@ -5,6 +5,8 @@
 namespace App\Controller;
 
 use App\Entity\File;
+use App\Entity\Model;
+use App\Entity\RV;
 use App\Entity\Summary;
 use App\Service\ChartService;
 use App\Service\Investigator;
@@ -33,6 +35,7 @@ class DefaultController extends AbstractController
      */
     public function index(ChartService $chart)
     {
+        set_time_limit(0);
         $em = $this->getDoctrine()->getManager();
         $notUsed = $em->getRepository(File::class)->filesNotUsed($this->path);
 
@@ -42,32 +45,54 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/importFile/{filename}", name="import_file")
+     * @Route("/models", name="models")
      */
-    public function importFile($filename): Response
+    public function viewModels()
     {
         $em = $this->getDoctrine()->getManager();
-        $used = $em->getRepository(File::class)->findOneBy(['filename' => $filename]);
+        $models = $em->getRepository(Model::class)->findAll();
 
-        if (!is_null($used)) {
-            $this->addFlash('warning', 'File already installed');
-
-            return $this->redirectToRoute('home');
-        } else {
-            $rvs = $this->loadFile($filename);
+        foreach ($models as $item) {
+            $list[] = $item->getName();
         }
+        $classC = $em->getRepository(RV::class)->listCompare($list);
+
+        $classBPlus = $em->getRepository(RV::class)->bPlus('60000');
 
         return $this->render('rv.html.twig', [
-                    'rvs' => $rvs,
-        ]);
+                    'classC' => $classC,
+                    'classB' => $classBPlus,
+                        ]
+        );
     }
+
+//    /**
+//     * @Route("/importFile/{filename}", name="import_file")
+//     */
+//    public function importFile($filename): Response
+//    {
+//        set_time_limit(0);
+//        $em = $this->getDoctrine()->getManager();
+//        $used = $em->getRepository(File::class)->findOneBy(['filename' => $filename]);
+//
+//        if (!is_null($used)) {
+//            $this->addFlash('warning', 'File already installed');
+//
+//            return $this->redirectToRoute('home');
+//        } else {
+//            $rvs = $this->loadFile($filename);
+//        }
+//
+//        return $this->render('rv.html.twig', [
+//                    'rvs' => $rvs,
+//        ]);
+//    }
 
     /**
      * @Route("/loadAll", name="load_all")
      */
     public function loadAll()
     {
-        set_time_limit(0);
         $em = $this->getDoctrine()->getManager();
         $files = $em->getRepository(File::class)->filesNotUsed($this->path);
         $n = 0;
@@ -101,15 +126,20 @@ class DefaultController extends AbstractController
     /**
      * @Route("exp", name="exp")
      */
-    public function experiment(ChartService $chart)
+    public function experiment()
     {
-        $a = $chart->buildChart('line', 'C', 'Price');
-//        $js = $chart->getChartJs($a, 'locX');
-//        dd($js);
+        $em = $this->getDoctrine()->getManager();
+        $models = $em->getRepository(Model::class)->findAll();
 
-        return $this->render('chart.html.twig', [
-                    'chartA' => $a,
-        ]);
+        foreach ($models as $item) {
+            $list[] = $item->getName();
+        }
+
+
+        $all = $em->getRepository(RV::class)->listCompare($list);
+        dd($all);
+
+        return $this->redirectToRoute('home');
     }
 
     /**
