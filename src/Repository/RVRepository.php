@@ -56,12 +56,25 @@ class RVRepository extends ServiceEntityRepository
                             ->where('r.ymm LIKE :item')
                             ->setParameter('item', '%' . $item . '%')
                             ->getQuery()->getResult();
-            if ('0' !== $qb[0]['N']) {
+            if (0 !== $qb[0]['N']) {
                 $found[] = array_merge(['name' => $item], ['N' => (int) $qb[0]['N'], 'Avg' => round($qb[0]['Total'] / $qb[0]['N'], 0)]);
             }
         }
 
         return $found;
+    }
+
+    public function modelHistory($model)
+    {
+        return $this->createQueryBuilder('r')
+                        ->select('r.year, r.location, r.price, s.added')
+                        ->distinct()
+                        ->join('r.file', 'f')
+                        ->join('f.dates', 's')
+                        ->where('r.ymm LIKE :model')
+                        ->setParameter('model', '%' . $model . '%')
+                        ->orderBy('r.year DESC, r.location, s.added')
+                        ->getQuery()->getResult();
     }
 
     private function fourWeeks($class)

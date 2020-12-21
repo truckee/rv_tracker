@@ -18,6 +18,7 @@ class Investigator
 {
 
     private $em;
+    private $years = ['2014', '2015', '2016', '2017'];
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -55,7 +56,7 @@ class Investigator
                 $priceString = preg_replace("/[^0-9]/", '', $price);
                 $place = $x->filter('span.location')->text();
                 $rv['location'] = $this->conformLocation($place);
-                if (0 < intval($priceString)) {
+                if (0 < intval($priceString) && in_array($rv['year'], $this->years)) {
                     $rv['price'] = intval($priceString);
                     $this->addToDB($rv, $file);
                     $entry[$i] = $rv;
@@ -73,42 +74,49 @@ class Investigator
 
     public function rvtrader($dir, $file)
     {
-//        $fullName = $dir . $file->getFilename();
-//        $html = file_get_contents($fullName);
-//
-//        $fieldMap = [
-//            'data-ymm' => 'ymm',
-//            'data-url' => 'url',
-//            'data-ad_make' => 'make',
-//            'data-ad_model' => 'model',
-//            'data-ad_price' => 'price',
-//            'data-ad_location' => 'location',
-//            'data-ad_year' => 'year',
-//        ];
-//
-//        $crawler = new Crawler($html);
-//        $filter = "div.margin-bottom30.bgWhite.boxShadow:nth-child(1)";
-//        $divs = $crawler->filter($filter);
-//        $n = count($divs);
-//        for ($i = 0; $i < $n; $i++) {
-//            $html = $divs->eq($i)->html();
-//            foreach ($fieldMap as $key => $value) {
-//                $attr = $key;
-//                $len = strlen($attr . '="');
-//                $pos = strpos($html, $attr);
-//                $start = $pos + $len;
-//                $end = stripos($html, '"', $start);
-//
-//                $item = substr($html, $start, $end - $start);
-//                $rv[$value] = ($value === 'url') ? 'https://www.rvtrader.com' . $item : $item;
-//                $rv['class'] = 'C';
-//            }
-//            $this->addToDB($rv, $file);
-//            $entry[$i] = $rv;
-//        }
-//        $this->em->flush();
-//
-//        return $entry;
+        $fullName = $dir . $file->getFilename();
+        $html = file_get_contents($fullName);
+
+        $fieldMap = [
+            'data-ymm' => 'ymm',
+            'data-url' => 'url',
+            'data-ad_make' => 'make',
+            'data-ad_model' => 'model',
+            'data-ad_price' => 'price',
+            'data-ad_location' => 'location',
+            'data-ad_year' => 'year',
+        ];
+
+        $crawler = new Crawler($html);
+        $filter = "div.margin-bottom30.bgWhite.boxShadow:nth-child(1)";
+        $divs = $crawler->filter($filter);
+        $n = count($divs);
+        for ($i = 0; $i < $n; $i++) {
+            $html = $divs->eq($i)->html();
+            foreach ($fieldMap as $key => $value) {
+                $attr = $key;
+                $len = strlen($attr . '="');
+                $pos = strpos($html, $attr);
+                $start = $pos + $len;
+                $end = stripos($html, '"', $start);
+
+                $item = substr($html, $start, $end - $start);
+                if ('location' === $value) {
+                    $item = $this->conformLocation($item);
+                }
+                $rv[$value] = ($value === 'url') ? 'https://www.rvtrader.com' . $item : $item;
+                $rv['class'] = 'C';
+            }
+            if (in_array($rv['year'], $this->years)) {
+                $this->addToDB($rv, $file);
+                $entry[$i] = $rv;
+            }
+        }
+        if (isset($entry)) {
+            $this->em->flush();
+
+            return $entry;
+        }
     }
 
     public function rvusa($dir, $file)
@@ -139,7 +147,7 @@ class Investigator
             $rv['ymm'] = $ymm;
             // strip zip code from location so that locations may be compared
             $rv['location'] = $this->conformLocation($place);
-            if (0 < intval($price)) {
+            if (0 < intval($price) && in_array($rv['year'], $this->years)) {
                 $rv['price'] = intval($price);
                 $this->addToDB($rv, $file);
                 $entry[$i] = $rv;
@@ -165,11 +173,10 @@ class Investigator
         $rv->setUrl($newRv['url'] ?? null);
         $rv->setYmm($newRv['ymm'] ?? null);
         $rv->setClass($newRv['class'] ?? null);
+
+
         $file->addRV($rv);
-
         $summary = $this->manageSummary($rv, $file);
-
-
         $this->em->persist($rv);
         $this->em->persist($file);
     }
@@ -223,14 +230,14 @@ class Investigator
         $nodes = $lis->eq(2)->filter($filter2);
         $x = $nodes->eq(0)->filter('input[type=checkbox]');
 
-        dd($x);
+//        dd($x);
     }
 
     private function conformLocation($location)
     {
         // removes zip code
         if (is_numeric(substr($location, -5))) {
-            return substr($d, 0, strlen($location) - 6);
+            return substr($location, 0, strlen($location) - 6);
         }
 
         // removes mileage from 89523

@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+{% block body %}
+    <div><h4>{{ model }} History</h4></div>
+    <div class="row">
+        <div class="col-2">Year</div>
+        <div class="col-2">Location</div>
+        <div class="col-2">Price</div>
+        <div class="col-2">Date</div>
+    </div>
+    {% for rv in rvs %}
+        <div class="row">
+            <div class="col-2">{{ rv.year }}</div>
+            <div class="col-2">{{ rv.location }}</div>
+            <div class="col-2">{{ rv.price|number_format }}</div>
+            <div class="col-2">{{ rv.added|date('m/d/Y') }}</div>
+        </div>
+    {% endfor %}
+    <a href="{{ path('models') }}" class="btn btn-primary">Return</a>
+{% endblock %}

@@ -66,6 +66,20 @@ class DefaultController extends AbstractController
         );
     }
 
+    /**
+     * @Route("/history/{model}", name="history")
+     */
+    public function modelHistory($model)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $rvs = $em->getRepository(RV::class)->modelHistory($model);
+
+        return $this->render('history.html.twig', [
+                    'model' => $model,
+                    'rvs' => $rvs,
+        ]);
+    }
+
 //    /**
 //     * @Route("/importFile/{filename}", name="import_file")
 //     */
@@ -128,18 +142,18 @@ class DefaultController extends AbstractController
      */
     public function experiment()
     {
-        $em = $this->getDoctrine()->getManager();
-        $models = $em->getRepository(Model::class)->findAll();
-
-        foreach ($models as $item) {
-            $list[] = $item->getName();
-        }
-
-
-        $all = $em->getRepository(RV::class)->listCompare($list);
-        dd($all);
-
-        return $this->redirectToRoute('home');
+//        $em = $this->getDoctrine()->getManager();
+//        $models = $em->getRepository(Model::class)->findAll();
+//
+//        foreach ($models as $item) {
+//            $list[] = $item->getName();
+//        }
+//
+//
+//        $all = $em->getRepository(RV::class)->listCompare($list);
+//        dd($all);
+//
+//        return $this->redirectToRoute('home');
     }
 
     /**
