@@ -57,9 +57,10 @@ class RVRepository extends ServiceEntityRepository
                             ->setParameter('item', '%' . $item . '%')
                             ->getQuery()->getResult();
             if (0 !== $qb[0]['N']) {
-                $found[] = array_merge(['name' => $item], ['N' => (int) $qb[0]['N'], 'Avg' => round($qb[0]['Total'] / $qb[0]['N'], 0)]);
+                $found[$item] = ['N' => (int) $qb[0]['N'], 'Avg' => round($qb[0]['Total'] / $qb[0]['N'], 0)];
             }
         }
+        ksort($found);
 
         return $found;
     }

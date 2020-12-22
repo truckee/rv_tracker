@@ -16,11 +16,10 @@
     </div>
     <div class="row">
         <div class="col-6">
-            {% for rv in classC %}
+            {% for name,rv in classC %}
                 <div class="row">
                     <div class="col-8">
-                        {{ rv.name }}
-                        {#<a href="{{ path('history', {'model': rv.name}) }}">{{ rv.name }}</a>#}
+                        {{ name }}
                     </div>
                     <div class="col-4">
                         ${{ rv.Avg|number_format }}
