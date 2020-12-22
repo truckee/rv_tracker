@@ -92,6 +92,18 @@ class RVRepository extends ServiceEntityRepository
         ;
     }
 
+    public function rvsFromFile($file)
+    {
+        return $this->createQueryBuilder('r')
+                        ->select('s.added, r.year, r.class, SUM(r.price) price, COUNT( r.class) n')
+                        ->join('r.file', 'f')
+                        ->join('f.dates', 's')
+                        ->where('r.file = :file')
+                        ->groupBy('s.added, r.year, r.class')
+                        ->setParameter('file', $file)
+                        ->getQuery()->getResult();
+    }
+
     private function addPriceLimit(QueryBuilder $qb = null): QueryBuilder
     {
         return $this->getOrCreateQueryBuilder($qb)

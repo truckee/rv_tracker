@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Summary
 {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -70,7 +71,7 @@ class Summary
     private $files;
 
     /**
-     * @ORM\Column(type="string", length=2)
+     * @ORM\Column(type="string", length=2, options={"default"=null})
      */
     private $class;
 
@@ -234,4 +235,5 @@ class Summary
 
         return $this;
     }
+
 }

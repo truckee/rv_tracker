@@ -63,10 +63,9 @@ class Investigator
                 }
             }
         }
-        if (isset($entry)) {
-            $this->em->flush();
 
-            return $entry;
+        if (isset($entry)) {
+            return ['rvs' => $entry, 'class' => $rv['class']];
         }
 
         return [];
@@ -104,18 +103,20 @@ class Investigator
                 if ('location' === $value) {
                     $item = $this->conformLocation($item);
                 }
-                $rv[$value] = ($value === 'url') ? 'https://www.rvtrader.com' . $item : $item;
+                if ('price' === $value) {
+                    $item = (int) $item;
+                }
+                $rv[$value] = $item;
                 $rv['class'] = 'C';
             }
+
             if (in_array($rv['year'], $this->years)) {
                 $this->addToDB($rv, $file);
                 $entry[$i] = $rv;
             }
         }
         if (isset($entry)) {
-            $this->em->flush();
-
-            return $entry;
+            return ['rvs' => $entry, 'class' => $rv['class']];
         }
     }
 
@@ -154,9 +155,7 @@ class Investigator
             }
         }
         if (isset($entry)) {
-            $this->em->flush();
-
-            return $entry;
+            return ['rvs' => $entry, 'class' => $rv['class']];
         }
 
         return [];
@@ -166,51 +165,58 @@ class Investigator
     {
         $rv = new RV();
         $rv->setLocation($newRv['location'] ?? null);
-        $rv->setMake($newRv['make'] ?? null);
         $rv->setPrice($newRv['price'] ?? null);
         $rv->setYear($newRv['year'] ?? null);
-        $rv->setModel($newRv['model'] ?? null);
-        $rv->setUrl($newRv['url'] ?? null);
         $rv->setYmm($newRv['ymm'] ?? null);
         $rv->setClass($newRv['class'] ?? null);
-
-
-        $file->addRV($rv);
-        $summary = $this->manageSummary($rv, $file);
+        $rv->setFile($file);
         $this->em->persist($rv);
-        $this->em->persist($file);
     }
 
-    private function manageSummary($rv, $file)
+    public function manageSummary($file, $class)
     {
-        $class = $rv->getClass();
-        $year = $rv->getYear();
-        $price = $rv->getPrice();
-        $fileName = $file->getFilename();
-        $fileDate = new \DateTime(substr($fileName, 0, 8));
-
+        $filename = $file->getFilename();
+        $fileDate = new \DateTime(substr($filename, 0, 8));
         $summary = $this->em->getRepository(Summary::class)->findOneBy(['added' => $fileDate, 'class' => $class]);
         if (null === $summary) {
             $summary = new Summary();
             $summary->setAdded($fileDate);
             $summary->setClass($class);
         }
-        $summary->addFile($file);
-        $this->em->persist($summary);
-        $this->em->flush($summary);
+        $file->setDates($summary);
+        $this->em->persist($file);
+        $this->em->flush();
 
-        $getterAvgPrice = 'getYr' . $year;
-        $setterAvgPrice = 'setYr' . $year;
-        $getterN = 'getN' . $year;
-        $setterN = 'setN' . $year;
+        // returns arrays with keys added, class, year, (sum of)price, (count of rvs)n
+        $dataSet = $this->em->getRepository(RV::class)->rvsFromFile($file);
 
-        $currentTotal = $summary->$getterAvgPrice() * $summary->$getterN();
-        $newN = $summary->$getterN() + 1;
-        $summary->$setterN($newN);
-        $newTotal = $currentTotal + $price;
-        $newAvgPrice = round($newTotal / $newN, 0);
-        $summary->$setterAvgPrice($newAvgPrice);
+        foreach ($this->years as $year) {
+            $getterAvgPrice = 'getYr' . $year;
+            $getterN = 'getN' . $year;
+            $n = $summary->$getterN();
+            $price = $summary->$getterAvgPrice() * $n;
+            $updater[$year] = ['price' => $price, 'n' => $n];
+        }
+
+        foreach ($dataSet as $row) {
+            $year = $row['year'];
+            $updater[$year]['price'] += $row['price'];
+            $updater[$year]['n'] += $row['n'];
+        }
+
+        foreach ($this->years as $year) {
+            $setterAvgPrice = 'setYr' . $year;
+            $setterN = 'setN' . $year;
+            $n = $updater[$year]['n'];
+            if (0 < $n) {
+                $avg = round($updater[$year]['price'] / $n, 0);
+                $summary->$setterN($n);
+                $summary->$setterAvgPrice($avg);
+            }
+        }
         $this->em->persist($summary);
+
+        $this->em->flush();
 
         return $summary;
     }
@@ -229,8 +235,6 @@ class Investigator
         // find n nodes containing rvt searches
         $nodes = $lis->eq(2)->filter($filter2);
         $x = $nodes->eq(0)->filter('input[type=checkbox]');
-
-//        dd($x);
     }
 
     private function conformLocation($location)

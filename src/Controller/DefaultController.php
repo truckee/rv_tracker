@@ -126,6 +126,7 @@ class DefaultController extends AbstractController
         $file = new File();
         $file->setFilename($filename);
         $em->persist($file);
+        $em->flush();
 
         $dir = $this->projectDir . '\\var\pages\\';
         $start = strpos($filename, '_') + 1;
@@ -133,8 +134,11 @@ class DefaultController extends AbstractController
         $len = $end - $start;
         $source = substr($filename, $start, $len);
         $rvs = $this->investigator->$source($dir, $file);
-
-        return $rvs;
+        if (!empty($rvs)) {
+            $class = $rvs['class'];
+            $summary = $this->investigator->manageSummary($file, $class);
+        }
+        return $rvs['rvs'];
     }
 
     /**
@@ -151,7 +155,6 @@ class DefaultController extends AbstractController
 //
 //
 //        $all = $em->getRepository(RV::class)->listCompare($list);
-//        dd($all);
 //
 //        return $this->redirectToRoute('home');
     }

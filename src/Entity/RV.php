@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class RV
 {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -21,21 +22,6 @@ class RV
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $ymm;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $url;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $make;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $model;
 
     /**
      * @ORM\Column(type="integer")
@@ -76,42 +62,6 @@ class RV
     public function setYmm(?string $ymm): self
     {
         $this->ymm = $ymm;
-
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(?string $url): self
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    public function getMake(): ?string
-    {
-        return $this->make;
-    }
-
-    public function setMake(?string $make): self
-    {
-        $this->make = $make;
-
-        return $this;
-    }
-
-    public function getModel(): ?string
-    {
-        return $this->model;
-    }
-
-    public function setModel(?string $model): self
-    {
-        $this->model = $model;
 
         return $this;
     }
@@ -175,4 +125,5 @@ class RV
 
         return $this;
     }
+
 }
