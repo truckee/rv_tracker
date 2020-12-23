@@ -1,16 +1,17 @@
 {% extends "base.html.twig" %}
 {% block body %}
     <div class="row">
-        <div class="col-4">
+        <div class="col-3 border-bottom border-info">
             Class C
         </div>
-        <div class="col-2">
+        <div class="col-2 border-bottom border-info">
             Price
         </div>
-        <div class="col-4">
-            Class B+
+        <div class="col-1"></div>
+        <div class="col-4 border-bottom border-info">
+            Class B+ (< $60K)
         </div>
-        <div class="col-2">
+        <div class="col-2 border-bottom border-info">
             Price
         </div>
     </div>
@@ -18,7 +19,7 @@
         <div class="col-6">
             {% for name,rv in classC %}
                 <div class="row">
-                    <div class="col-8">
+                    <div class="col-6">
                         {{ name }}
                     </div>
                     <div class="col-4">
@@ -27,6 +28,7 @@
                 </div>
             {% endfor %}
         </div>
+
         <div class="col-6">
             {% for bee in classB %}
                 <div class="row">

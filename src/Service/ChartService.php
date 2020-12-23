@@ -51,6 +51,7 @@ class ChartService
                 ->setShowTextEvery(4);
         $chart->getOptions()->getVAxis()->setTitle(($type === 'Price') ? '$' : 'N');
         $chart->getOptions()->getLegend()->setPosition('right');
+        $chart->getOptions()->setCurveType('function');
 
         return $chart;
     }
