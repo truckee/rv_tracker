@@ -11,7 +11,8 @@
     {% for model in models %}
         <div class="row">
             <div class="col-3">{{ model.name }}</div>
-            <div class="col-2"> <a href="{{ path('model_edit', {'id': model.id}) }}">edit</a></div>
+            <div class="col-1"> <a href="{{ path('model_edit', {'id': model.id}) }}">edit</a></div>
+            <div class="col-1"> <a href="{{ path('model_delete', {'id': model.id}) }}">delete</a></div>
         </div>
     {% endfor %}
     <a href="{{ path('model_new') }}">Create new</a>
