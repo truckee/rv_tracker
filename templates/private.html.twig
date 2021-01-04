@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+{% block body %}
+    <h4>Private seller model matches</h4>
+    <div class="row">
+        <div class="col-3 border-bottom border-info">
+            Class C
+        </div>
+        <div class="col-2 border-bottom border-info">
+            Price
+        </div>
+    </div>
+    {% for name,rv in classC %}
+        <div class="row">
+            <div class="col-3">
+                {{ name }}
+            </div>
+            <div class="col-2">
+                ${{ rv.Avg|number_format }}
+            </div>
+        </div>
+    {% endfor %}
+    <a href="{{ path('home') }}" class="btn btn-primary  btn-sm">Return</a>
+{% endblock %}

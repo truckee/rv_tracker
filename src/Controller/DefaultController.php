@@ -67,6 +67,22 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * @Route("/private", name="private")
+     */
+    public function privateSellerModels()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $models = $em->getRepository(Model::class)->findAll();
+
+        foreach ($models as $item) {
+            $list[] = $item->getName();
+        }
+        $classC = $em->getRepository(RV::class)->privateListCompare($list);
+
+        return $this->render('private.html.twig', ['classC' => $classC,]);
+    }
+
+    /**
      * @Route("/history/{model}", name="history")
      */
     public function modelHistory($model)
@@ -146,17 +162,9 @@ class DefaultController extends AbstractController
      */
     public function experiment()
     {
-//        $em = $this->getDoctrine()->getManager();
-//        $models = $em->getRepository(Model::class)->findAll();
-//
-//        foreach ($models as $item) {
-//            $list[] = $item->getName();
-//        }
-//
-//
-//        $all = $em->getRepository(RV::class)->listCompare($list);
-//
-//        return $this->redirectToRoute('home');
+        $this->investigator->testFile();
+
+        return $this->redirectToRoute('home');
     }
 
     /**
