@@ -47,20 +47,19 @@ class Investigator
         for ($i = 0; $i < $n; $i++) {
             $x = $nodes->eq($i)->children('div')->filter('div.result-content');
             $price = $x->filter('span.price > span')->text();
-            if ('SOLD' !== $price) {
-                $a = $nodes->eq($i)->children('div')->filter('a.result-link');
-                $rv['url'] = $a->attr('href');
-                $ymm = $x->filter('h5')->text();
-                $rv['ymm'] = $ymm;
-                $rv['year'] = substr($ymm, 0, 4);
-                $priceString = preg_replace("/[^0-9]/", '', $price);
-                $place = $x->filter('span.location')->text();
-                $rv['location'] = $this->conformLocation($place);
-                if (0 < intval($priceString) && in_array($rv['year'], $this->years)) {
-                    $rv['price'] = intval($priceString);
-                    $this->addToDB($rv, $file);
-                    $entry[$i] = $rv;
-                }
+            $a = $nodes->eq($i)->children('div')->filter('a.result-link');
+            $rv['url'] = $a->attr('href');
+            $ymm = $x->filter('h5')->text();
+            $rv['ymm'] = $ymm;
+            $rv['year'] = substr($ymm, 0, 4);
+            $priceString = preg_replace("/[^0-9]/", '', $price);
+            $place = $x->filter('span.location')->text();
+            $rv['location'] = $this->conformLocation($place);
+
+            if (0 < intval($priceString) && in_array($rv['year'], $this->years)) {
+                $rv['price'] = intval($priceString);
+                $this->addToDB($rv, $file);
+                $entry[$i] = $rv;
             }
         }
 
@@ -88,10 +87,10 @@ class Investigator
 
         $crawler = new Crawler($html);
         $filter = "div.margin-bottom30.bgWhite.boxShadow:nth-child(1)";
-        $divs = $crawler->filter($filter);
-        $n = count($divs);
+        $nodes = $crawler->filter($filter);
+        $n = count($nodes);
         for ($i = 0; $i < $n; $i++) {
-            $html = $divs->eq($i)->html();
+            $html = $nodes->eq($i)->html();
             foreach ($fieldMap as $key => $value) {
                 $attr = $key;
                 $len = strlen($attr . '="');
@@ -221,20 +220,30 @@ class Investigator
         return $summary;
     }
 
+    // private seller found
+    // rvusa: strtoupper($rv['location']) == 'PRIVATE SELLER'
+    // rvtrader: $filter = 'div.searchCardCta span.seller-name';
+    //          'Private Seller' === $nodes->eq($i)->filter($filter)->text();
+
     public function testFile()
     {
         $dir = 'G:\\workspace\\scraper\\var\\pages\\';
-        $file = '20201210_match_10-22-45' . '.html';
+        $file = '20210102_rvtrader.com_05-29-50' . '.html';
         $html = file_get_contents($dir . $file);
         $crawler = new Crawler($html);
-        $filter = 'input.custom-control-input';
+        $filter = "div.margin-bottom30.bgWhite.boxShadow:nth-child(1)";
         $nodes = $crawler->filter($filter);
-        $countNodes = \count($nodes);
-
-        $filter2 = 'li[itemtype="http://schema.org/Product"]';
-        // find n nodes containing rvt searches
-        $nodes = $lis->eq(2)->filter($filter2);
-        $x = $nodes->eq(0)->filter('input[type=checkbox]');
+        $n = count($nodes);
+        $j = 0;
+        for ($i = 0; $i < $n; $i++) {
+            $filter = 'div.searchCardCta span.seller-name';
+            // $('div.searchCardCta span.seller-name')
+            $a = $nodes->eq($i)->filter($filter)->text();
+            if ('Private Seller' === $a) {
+                $j++;
+            }
+        }
+        dd($j);
     }
 
     private function conformLocation($location)

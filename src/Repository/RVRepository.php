@@ -65,6 +65,25 @@ class RVRepository extends ServiceEntityRepository
         return $found;
     }
 
+    public function privateListCompare($list)
+    {
+        foreach ($list as $item) {
+            $qb = $this->createQueryBuilder('r')
+                            ->select('COUNT(r) N, SUM(r.price) Total ')
+                            ->where('r.ymm LIKE :item')
+                            ->andWhere('r.location = :private')
+                            ->setParameter('item', '%' . $item . '%')
+                            ->setParameter('private', 'Private Seller')
+                            ->getQuery()->getResult();
+            if (0 !== $qb[0]['N']) {
+                $found[$item] = ['N' => (int) $qb[0]['N'], 'Avg' => round($qb[0]['Total'] / $qb[0]['N'], 0)];
+            }
+        }
+        ksort($found);
+
+        return $found;
+    }
+
     public function modelHistory($model)
     {
         return $this->createQueryBuilder('r')
