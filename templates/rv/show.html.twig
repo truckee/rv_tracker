@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RV{% endblock %}
+
+{% block body %}
+    <h1>RV</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ r_v.id }}</td>
+            </tr>
+            <tr>
+                <th>Ymm</th>
+                <td>{{ r_v.ymm }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ r_v.price }}</td>
+            </tr>
+            <tr>
+                <th>Location</th>
+                <td>{{ r_v.location }}</td>
+            </tr>
+            <tr>
+                <th>Year</th>
+                <td>{{ r_v.year }}</td>
+            </tr>
+            <tr>
+                <th>Class</th>
+                <td>{{ r_v.class }}</td>
+            </tr>
+            <tr>
+                <th>Slideout</th>
+                <td>{{ r_v.slideout ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('r_v_index') }}">back to list</a>
+
+    <a href="{{ path('r_v_edit', {'id': r_v.id}) }}">edit</a>
+
+    {{ include('r_v/_delete_form.html.twig') }}
+{% endblock %}

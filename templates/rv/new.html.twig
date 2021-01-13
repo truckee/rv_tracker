@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New RV{% endblock %}
+
+{% block body %}
+    <h1>Create new RV</h1>
+
+    {{ include('r_v/_form.html.twig') }}
+
+    <a href="{{ path('r_v_index') }}">back to list</a>
+{% endblock %}

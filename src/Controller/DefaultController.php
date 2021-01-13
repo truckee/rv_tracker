@@ -52,10 +52,7 @@ class DefaultController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $models = $em->getRepository(Model::class)->findAll();
 
-        foreach ($models as $item) {
-            $list[] = $item->getName();
-        }
-        $classC = $em->getRepository(RV::class)->listCompare($list);
+        $classC = $em->getRepository(RV::class)->listCompare($models);
 
         $classBPlus = $em->getRepository(RV::class)->bPlus('60000');
 

@@ -48,16 +48,21 @@ class RVRepository extends ServiceEntityRepository
                         ->getQuery()->getResult();
     }
 
-    public function listCompare($list)
+    public function listCompare($models)
     {
-        foreach ($list as $item) {
+        foreach ($models as $item) {
+            $name = $item->getName();
             $qb = $this->createQueryBuilder('r')
                             ->select('COUNT(r) N, SUM(r.price) Total ')
-                            ->where('r.ymm LIKE :item')
-                            ->setParameter('item', '%' . $item . '%')
+                            ->where('r.ymm LIKE :name')
+                            ->setParameter('name', '%' . $name . '%')
                             ->getQuery()->getResult();
             if (0 !== $qb[0]['N']) {
-                $found[$item] = ['N' => (int) $qb[0]['N'], 'Avg' => round($qb[0]['Total'] / $qb[0]['N'], 0)];
+                $found[$name] = [
+                    'N' => (int) $qb[0]['N'],
+                    'Avg' => round($qb[0]['Total'] / $qb[0]['N'], 0),
+                    'slideout' => $item->getSlideout(),
+                ];
             }
         }
         ksort($found);

@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Model
 {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -21,6 +22,11 @@ class Model
      * @ORM\Column(type="string", length=255)
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $slideout = false;
 
     public function getId(): ?int
     {
@@ -38,4 +44,17 @@ class Model
 
         return $this;
     }
+
+    public function getSlideout(): ?bool
+    {
+        return $this->slideout;
+    }
+
+    public function setSlideout(bool $slideout): self
+    {
+        $this->slideout = $slideout;
+
+        return $this;
+    }
+
 }

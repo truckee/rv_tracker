@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RV index{% endblock %}
+
+{% block body %}
+    <h1>RV index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Ymm</th>
+                <th>Price</th>
+                <th>Location</th>
+                <th>Year</th>
+                <th>Class</th>
+                <th>Slideout</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r_v in r_vs %}
+            <tr>
+                <td>{{ r_v.id }}</td>
+                <td>{{ r_v.ymm }}</td>
+                <td>{{ r_v.price }}</td>
+                <td>{{ r_v.location }}</td>
+                <td>{{ r_v.year }}</td>
+                <td>{{ r_v.class }}</td>
+                <td>{{ r_v.slideout ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('r_v_show', {'id': r_v.id}) }}">show</a>
+                    <a href="{{ path('r_v_edit', {'id': r_v.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('r_v_new') }}">Create new</a>
+{% endblock %}

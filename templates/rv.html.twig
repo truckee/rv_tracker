@@ -20,7 +20,7 @@
             {% for name,rv in classC %}
                 <div class="row">
                     <div class="col-6">
-                        {{ name }}
+                        {{ name }}{% if rv.slideout %} <span class="text-danger">*</span>{% endif %}
                     </div>
                     <div class="col-4">
                         ${{ rv.Avg|number_format }}
