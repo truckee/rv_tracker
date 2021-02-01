@@ -87,6 +87,9 @@
     "fabpot/goutte": {
         "version": "v4.0.0"
     },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.3"
+    },
     "laminas/laminas-code": {
         "version": "3.4.1"
     },
@@ -104,9 +107,6 @@
     },
     "nikic/php-parser": {
         "version": "v4.6.0"
-    },
-    "ocramius/proxy-manager": {
-        "version": "2.8.0"
     },
     "php": {
         "version": "7.4"
@@ -537,9 +537,6 @@
     },
     "twig/twig": {
         "version": "v3.0.4"
-    },
-    "webimpress/safe-writer": {
-        "version": "2.0.1"
     },
     "webmozart/assert": {
         "version": "1.9.1"

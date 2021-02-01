@@ -38,7 +38,7 @@ class AutoFileImportCommand extends Command
             $file->setAdded(new \DateTime(substr($import, 0, 8)));
             $file->setFilename($import);
             $this->em->persist($file);
-            $dir = $this->projectDir . '\\var\pages\\';
+            $dir = $this->projectDir . '/var/pages/';
 
             $start = strpos($import, '_') + 1;
             $end = strpos($import, '.');

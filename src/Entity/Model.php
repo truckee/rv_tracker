@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ModelRepository::class)
+ * @ORM\Table(schema="rv")
  */
 class Model
 {
@@ -27,6 +28,11 @@ class Model
      * @ORM\Column(type="boolean")
      */
     private $slideout = false;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $msrp;
 
     public function getId(): ?int
     {
@@ -53,6 +59,18 @@ class Model
     public function setSlideout(bool $slideout): self
     {
         $this->slideout = $slideout;
+
+        return $this;
+    }
+
+    public function getMsrp(): ?int
+    {
+        return $this->msrp;
+    }
+
+    public function setMsrp(?int $msrp): self
+    {
+        $this->msrp = $msrp;
 
         return $this;
     }

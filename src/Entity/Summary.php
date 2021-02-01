@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SummaryRepository::class)
+ * @ORM\Table(schema="rv")
  */
 class Summary
 {

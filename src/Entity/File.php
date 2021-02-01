@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class File
 {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -60,6 +61,7 @@ class File
 
         return $this;
     }
+
 //
 //    public function getAdded(): ?\DateTimeInterface
 //    {
@@ -115,4 +117,5 @@ class File
 
         return $this;
     }
+
 }

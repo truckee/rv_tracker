@@ -141,7 +141,7 @@ class DefaultController extends AbstractController
         $em->persist($file);
         $em->flush();
 
-        $dir = $this->projectDir . '\\var\pages\\';
+        $dir = $this->projectDir . '/var/pages/';
         $start = strpos($filename, '_') + 1;
         $end = strpos($filename, '.');
         $len = $end - $start;

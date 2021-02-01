@@ -9,10 +9,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ModelType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
+                ->add('name')
+                ->add('slideout')
+                ->add('msrp')
         ;
     }
 
@@ -22,4 +25,5 @@ class ModelType extends AbstractType
             'data_class' => Model::class,
         ]);
     }
+
 }
