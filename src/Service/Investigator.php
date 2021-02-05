@@ -18,7 +18,7 @@ class Investigator
 {
 
     private $em;
-    private $years = ['2014', '2015', '2016', '2017'];
+    private $years = ['2014', '2015', '2016', '2017', '2018', '2019', '2020'];
 
     public function __construct(EntityManagerInterface $em)
     {

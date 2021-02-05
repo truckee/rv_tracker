@@ -76,6 +76,36 @@ class Summary
      */
     private $class;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $n_2018 = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $n_2019 = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $n_2020 = 0;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $yr_2018 = 0;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $yr_2019 = 0;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $yr_2020 = 0;
+
     public function __construct()
     {
         $this->files = new ArrayCollection();
@@ -233,6 +263,78 @@ class Summary
     public function setClass(string $class): self
     {
         $this->class = $class;
+
+        return $this;
+    }
+
+    public function getN2018(): ?int
+    {
+        return $this->n_2018;
+    }
+
+    public function setN2018(int $n_2018): self
+    {
+        $this->n_2018 = $n_2018;
+
+        return $this;
+    }
+
+    public function getN2019(): ?int
+    {
+        return $this->n_2019;
+    }
+
+    public function setN2019(int $n_2019): self
+    {
+        $this->n_2019 = $n_2019;
+
+        return $this;
+    }
+
+    public function getN2020(): ?int
+    {
+        return $this->n_2020;
+    }
+
+    public function setN2020(int $n_2020): self
+    {
+        $this->n_2020 = $n_2020;
+
+        return $this;
+    }
+
+    public function getYr2018(): ?float
+    {
+        return $this->yr_2018;
+    }
+
+    public function setYr2018(float $yr_2018): self
+    {
+        $this->yr_2018 = $yr_2018;
+
+        return $this;
+    }
+
+    public function getYr2019(): ?float
+    {
+        return $this->yr_2019;
+    }
+
+    public function setYr2019(float $yr_2019): self
+    {
+        $this->yr_2019 = $yr_2019;
+
+        return $this;
+    }
+
+    public function getYr2020(): ?float
+    {
+        return $this->yr_2020;
+    }
+
+    public function setYr2020(float $yr_2020): self
+    {
+        $this->yr_2020 = $yr_2020;
 
         return $this;
     }
