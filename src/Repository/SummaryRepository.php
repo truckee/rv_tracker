@@ -26,10 +26,10 @@ class SummaryRepository extends ServiceEntityRepository
         $columns = 's.added, ';
         switch ($type) {
             case 'Price':
-                $columns .= 's.yr_2017, s.yr_2016, s.yr_2015, s.yr_2014';
+                $columns .= 's.yr_2020, s.yr_2019, s.yr_2018, s.yr_2017, s.yr_2016, s.yr_2015, s.yr_2014';
                 break;
             case 'Count':
-                $columns .= 's.n_2017, s.n_2016, s.n_2015, s.n_2014';
+                $columns .= 's.n_2020, s.n_2019, s.n_2018, s.n_2017, s.n_2016, s.n_2015, s.n_2014';
                 break;
             default:
                 break;
@@ -38,8 +38,10 @@ class SummaryRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('s')
                         ->select($columns)
                         ->where('s.class = :class')
+                        ->andWhere('s.added >= :date')
                         ->orderBy('s.added')
                         ->setParameter('class', $class)
+                        ->setParameter('date', '2021-02-06')
                         ->getQuery()->getResult();
         foreach ($query as $row) {
             foreach ($row as $key => $value) {
@@ -66,7 +68,7 @@ class SummaryRepository extends ServiceEntityRepository
                         "select s.added, r.year, (sum(r.price)/count(r.year)) average, count(r.year) N from App\Entity\RV r
                 join App\Entity\File f with f = r.file
                 join App\Entity\Summary s with s = f.dates
-                where r.year in ('2017', '2016', '2015', '2014')
+                where r.year in ('2020', '2019', '2018', '2017', '2016', '2015', '2014')
                 group by s.added, r.year
                 order by s.added, r.year desc"
                 )->getArrayResult();

@@ -40,10 +40,10 @@ class ChartService
     {
         $data = $this->em->getRepository(Summary::class)->chartData($class, $type);
         $chart = new LineChart();
-        $first[] = ['Date', '2017', '2016', '2015', '2014'];
+        $first[] = ['Date', '2020', '2019', '2018', '2017', '2016', '2015', '2014'];
         $resultant = array_merge($first, $data);
         $chart->getData()->setArrayToDataTable($resultant);
-        $chart->getOptions()->setTitle('Class ' . $class . ' RV ' . $type . ': Model Years 2014-2017');
+        $chart->getOptions()->setTitle('Class ' . $class . ' RV ' . $type . ': Model Years 2014-2020');
         $chart->getOptions()->setLineWidth(1)
                 ->setHeight(400)
                 ->setWidth(700)

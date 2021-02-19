@@ -228,22 +228,47 @@ class Investigator
     public function testFile()
     {
         $dir = 'G:\\workspace\\scraper\\var\\pages\\';
-        $file = '20210102_rvtrader.com_05-29-50' . '.html';
+        $file = '20210217_rvtrader.com_16-47-29' . '.html';
         $html = file_get_contents($dir . $file);
+        $fieldMap = [
+            'data-ymm' => 'ymm',
+            'data-url' => 'url',
+            'data-ad_make' => 'make',
+            'data-ad_model' => 'model',
+            'data-ad_price' => 'price',
+            'data-ad_location' => 'location',
+            'data-ad_year' => 'year',
+        ];
+
         $crawler = new Crawler($html);
         $filter = "div.margin-bottom30.bgWhite.boxShadow:nth-child(1)";
         $nodes = $crawler->filter($filter);
         $n = count($nodes);
-        $j = 0;
         for ($i = 0; $i < $n; $i++) {
-            $filter = 'div.searchCardCta span.seller-name';
-            // $('div.searchCardCta span.seller-name')
-            $a = $nodes->eq($i)->filter($filter)->text();
-            if ('Private Seller' === $a) {
-                $j++;
+            $html = $nodes->eq($i)->html();
+            foreach ($fieldMap as $key => $value) {
+                $attr = $key;
+                $len = strlen($attr . '="');
+                $pos = strpos($html, $attr);
+                $start = $pos + $len;
+                $end = stripos($html, '"', $start);
+
+                $item = substr($html, $start, $end - $start);
+                if ('location' === $value) {
+                    $item = $this->conformLocation($item);
+                }
+                if ('price' === $value) {
+                    $item = (int) $item;
+                }
+                $rv[$value] = $item;
+                $rv['class'] = 'C';
             }
+
+//            if (in_array($rv['year'], $this->years)) {
+//                $this->addToDB($rv, $file);
+//                $entry[$i] = $rv;
+//            }
         }
-        dd($j);
     }
 
     private function conformLocation($location)
